@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>select assessment · aptitude portal</title>
+
+  <!-- Firebase SDKs for Cloud Data -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyqS7iZujmdJ-Vwg5yrRfS24yW-VzG540",
+      authDomain: "placement-portal-465c2.firebaseapp.com",
+      projectId: "placement-portal-465c2",
+      storageBucket: "placement-portal-465c2.firebasestorage.app",
+      messagingSenderId: "60536248254",
+      appId: "1:60536248254:web:2b4fe5996029c4712e0bef",
+      measurementId: "G-F1T6X08PZ7"
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    if (!localStorage.getItem("username")) {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { 
+        extend: { 
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            deep: { 950: '#0B0B12', 900: '#13131C', 800: '#1E1E2A' },
+            tcs: '#2563eb',
+            wipro: '#4f46e5',
+            infosys: '#0891b2',
+            accenture: '#9333ea',
+            fullmock: '#8b5cf6'
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'shimmer': 'shimmer 2s infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            },
+          },
+        } 
+      }
+    }
+  </script>
+
+  <style>
+    .fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    
+    .bg-grid-pattern { 
+      background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px); 
+      background-size: 32px 32px; 
+    }
+
+    .dark body { background-color: #0B0B12; }
+    .dark .bg-white { background-color: #16161F !important; }
+    .dark .border-slate-200 { border-color: #2A2A37 !important; }
+    .dark .text-slate-500 { color: #8A8A9E !important; }
+    .dark .text-slate-600 { color: #B0B0C0 !important; }
+
+    /* Company-specific card borders on hover */
+    .company-tcs:hover { border-color: #2563eb !important; }
+    .company-wipro:hover { border-color: #4f46e5 !important; }
+    .company-infosys:hover { border-color: #0891b2 !important; }
+    .company-accenture:hover { border-color: #9333ea !important; }
+    .company-fullmock:hover { border-color: #8b5cf6 !important; }
+    
+    /* Custom select styling */
+    .custom-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.25rem;
+      appearance: none;
+      padding-right: 2.5rem;
+    }
+    .dark .custom-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+  </style>
+</head>
+
+<body class="bg-soft-50 dark:bg-[#0B0B12] text-slate-900 dark:text-slate-200 min-h-screen flex flex-col font-sans antialiased relative overflow-x-hidden">
+
+  <div class="absolute inset-0 z-[-1] bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:linear-gradient(to_bottom,black,transparent)] pointer-events-none"></div>
+  <div class="fixed top-20 -left-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-[120px] z-[-1] animate-float"></div>
+  <div class="fixed bottom-20 -right-20 w-96 h-96 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-[140px] z-[-1]" style="animation-delay: -3s;"></div>
+
+  <nav class="sticky top-4 z-50 max-w-7xl mx-auto w-[calc(100%-2.5rem)] px-5 py-3 rounded-2xl bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-xl border border-white/30 dark:border-[#2A2A37]/80 shadow-sm">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+        <span class="text-xl font-semibold tracking-tight">
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">aptitude</span>
+          <span class="text-slate-500 dark:text-slate-500 font-light mx-1">/</span>
+          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">assessments</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-slate-400 dark:text-[#6B6B80] hidden sm:block">👋 <span id="usernameDisplay"></span></span>
+        <button onclick="window.location.href='index.html'" class="px-4 py-2 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#262633] text-sm font-medium shadow-sm transition-all flex items-center gap-1 active:scale-95">
+          <span>←</span> home
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow max-w-7xl mx-auto w-full px-5 sm:px-6 py-10">
+    
+    <!-- Header -->
+    <div class="text-center mb-10 w-full">
+      <div class="fade-up inline-flex flex-col items-center">
+        <div class="mb-4 p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-lg">
+          <span class="text-5xl drop-shadow-md">📋</span>
+        </div>
+        <span class="text-xs uppercase tracking-[0.3em] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-[#1E1E2A] px-4 py-2 rounded-full border border-blue-100 dark:border-[#353542] mb-4">practice assessments</span>
+        <h1 class="text-4xl md:text-5xl font-medium tracking-tight mb-3 text-slate-800 dark:text-white">
+          choose your test
+        </h1>
+        <p class="text-md text-slate-500 dark:text-[#B0B0C0] max-w-2xl mx-auto">
+          Select from available mock tests aligned with the latest recruitment patterns
+        </p>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="fade-up flex flex-wrap justify-center gap-4 max-w-4xl mx-auto mb-10">
+      <select id="filterCompany" onchange="renderTests()" 
+        class="custom-select px-5 py-3 rounded-xl bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 text-slate-700 dark:text-slate-200 text-sm font-medium focus:border-blue-400 dark:focus:border-blue-600 outline-none transition-all cursor-pointer shadow-sm">
+        <option value="All">🏢 All Companies</option>
+        <option value="TCS">TCS NQT</option>
+        <option value="Wipro">Wipro Elite</option>
+        <option value="Infosys">Infosys SP/DSE</option>
+        <option value="Accenture">Accenture ASE</option>
+        <option value="FullMock">📋 Full Length Mock</option>
+      </select>
+
+      <select id="filterSection" onchange="renderTests()" 
+        class="custom-select px-5 py-3 rounded-xl bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 text-slate-700 dark:text-slate-200 text-sm font-medium focus:border-blue-400 dark:focus:border-blue-600 outline-none transition-all cursor-pointer shadow-sm">
+        <option value="All">📚 All Sections</option>
+        <option value="Numerical Ability">🔢 Numerical Ability</option>
+        <option value="Logical Reasoning">🧠 Logical Reasoning</option>
+        <option value="Verbal Ability">📝 Verbal Ability</option>
+        <option value="Coding">💻 Coding</option>
+        <option value="Full Length">📋 Full Length</option>
+      </select>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-20 hidden">
+      <div class="inline-flex flex-col items-center">
+        <div class="w-16 h-16 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-slate-500 dark:text-[#8A8A9E]">Loading tests from cloud...</p>
+      </div>
+    </div>
+
+    <!-- Test Grid -->
+    <div id="testGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full max-w-6xl mx-auto">
+      <!-- Dynamically populated -->
+    </div>
+
+  </main>
+
+  <footer class="w-full border-t border-slate-200/60 dark:border-[#2A2A37]/80 py-6 text-center text-slate-400 dark:text-[#6B6B80] text-xs mt-10">
+    <p>© 2026 aptitude portal · practice with purpose</p>
+  </footer>
+
+  <script>
+    let allTests = [];
+    let allQuestions = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Dark mode setup
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+
+      // Display username
+      const username = localStorage.getItem("username");
+      if (username) {
+        document.getElementById("usernameDisplay").innerText = username;
+      }
+
+      loadTests();
+
+      setTimeout(() => {
+        document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+      }, 50);
+    });
+
+    async function loadTests() {
+      const loadingState = document.getElementById('loadingState');
+      const grid = document.getElementById('testGrid');
+      
+      loadingState.classList.remove('hidden');
+      grid.innerHTML = '';
+
+      try {
+        // Fetch tests from Firestore
+        const testsSnap = await db.collection("tests").get();
+        allTests = testsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Fetch all questions for counting
+        const qsSnap = await db.collection("questions").get();
+        allQuestions = qsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        renderTests();
+      } catch (e) {
+        console.error("Error loading tests from cloud:", e);
+        // Fallback to localStorage
+        try {
+          allTests = JSON.parse(localStorage.getItem("mockTestsDB")) || [];
+          allQuestions = JSON.parse(localStorage.getItem("customQuestions")) || [];
+          renderTests();
+        } catch (err) {
+          grid.innerHTML = `
+            <div class="col-span-full py-20 flex flex-col items-center justify-center text-center">
+              <div class="text-7xl mb-4 opacity-40">⚠️</div>
+              <h3 class="text-xl font-medium text-slate-600 dark:text-slate-300 mb-2">Connection Error</h3>
+              <p class="text-sm text-slate-500 dark:text-[#8A8A9E] max-w-md">Unable to load tests. Please check your internet connection.</p>
+            </div>
+          `;
+        }
+      } finally {
+        loadingState.classList.add('hidden');
+      }
+    }
+
+    function renderTests() {
+      const grid = document.getElementById("testGrid");
+      
+      // Apply filters
+      const filterComp = document.getElementById("filterCompany").value;
+      const filterSec = document.getElementById("filterSection").value;
+
+      let filteredTests = allTests.filter(t => {
+        if (!t) return false;
+        
+        // Handle Full Mock filter
+        if (filterComp === "FullMock") {
+          return t.type === "fullmock" || t.title?.toLowerCase().includes("full length");
+        }
+        
+        const matchComp = filterComp === "All" || t.company === filterComp;
+        const matchSec = filterSec === "All" || t.section === filterSec || 
+                        (filterSec === "Full Length" && t.type === "fullmock");
+        
+        return matchComp && matchSec;
+      });
+
+      // Empty state
+      if (filteredTests.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-20 flex flex-col items-center justify-center text-center">
+            <div class="text-7xl mb-4 opacity-40">📭</div>
+            <h3 class="text-xl font-medium text-slate-600 dark:text-slate-300 mb-2">No tests found</h3>
+            <p class="text-sm text-slate-500 dark:text-[#8A8A9E] max-w-md">
+              ${allTests.length === 0 ? 
+                'No tests have been created yet. Please check back later.' : 
+                'No tests match your current filters. Try adjusting your selection.'}
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort tests - newer first
+      const sortedTests = [...filteredTests].reverse();
+
+      // Render tests
+      grid.innerHTML = sortedTests.map((test, index) => {
+        const company = test.company || "TCS";
+        const companyLower = company.toLowerCase();
+        const section = test.section || "General";
+        const title = test.title || "Practice Assessment";
+        const time = test.time || "30";
+        const isFullMock = test.type === "fullmock" || title.toLowerCase().includes("full length");
+        
+        // Get questions for this test
+        const testQuestions = allQuestions.filter(q => q.testId === test.id);
+        const questionCount = testQuestions.length;
+        
+        // Group questions by section for full mock tests
+        const sections = {};
+        testQuestions.forEach(q => {
+          const sec = q.subject || 'General';
+          sections[sec] = (sections[sec] || 0) + 1;
+        });
+        
+        // Company-specific styling
+        let companyColor = 'blue';
+        let icon = '🏢';
+        let bgGradient = 'from-blue-500 to-indigo-600';
+        
+        if (isFullMock) {
+          companyColor = 'fullmock';
+          icon = '📋';
+          bgGradient = 'from-purple-500 to-indigo-600';
+        } else {
+          if (companyLower === 'tcs') {
+            companyColor = 'blue';
+            icon = '🏢';
+            bgGradient = 'from-blue-500 to-indigo-600';
+          } else if (companyLower === 'wipro') {
+            companyColor = 'indigo';
+            icon = '💻';
+            bgGradient = 'from-indigo-500 to-purple-600';
+          } else if (companyLower === 'infosys') {
+            companyColor = 'cyan';
+            icon = '🌐';
+            bgGradient = 'from-cyan-500 to-teal-600';
+          } else if (companyLower === 'accenture') {
+            companyColor = 'purple';
+            icon = '⚡';
+            bgGradient = 'from-purple-500 to-pink-600';
+          }
+        }
+
+        // Calculate difficulty distribution
+        const easyCount = testQuestions.filter(q => q.level === 'Easy').length;
+        const mediumCount = testQuestions.filter(q => q.level === 'Medium').length;
+        const hardCount = testQuestions.filter(q => q.level === 'Hard').length;
+
+        return `
+          <div class="fade-up group bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-3xl p-6 hover:bg-white dark:hover:bg-[#1C1C28] hover:border-${companyColor}-300 dark:hover:border-${companyColor}-700/80 hover:shadow-xl transition-all duration-300 relative overflow-hidden" style="transition-delay: ${index * 30}ms">
+            
+            <!-- Animated gradient border on hover -->
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div class="absolute inset-0 rounded-3xl bg-gradient-to-r ${bgGradient} opacity-20 blur-xl"></div>
+            </div>
+            
+            <!-- Icon -->
+            <div class="w-14 h-14 mb-4 bg-gradient-to-br ${bgGradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+              <span class="text-2xl">${icon}</span>
+            </div>
+            
+            <!-- Title & company -->
+            <h3 class="text-lg font-semibold mb-1 tracking-tight line-clamp-1" title="${title}">${title}</h3>
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+              <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-${companyColor}-50 dark:bg-${companyColor}-900/20 text-${companyColor}-600 dark:text-${companyColor}-400 border border-${companyColor}-100 dark:border-${companyColor}-800/30">
+                ${isFullMock ? 'Full Length Mock' : company}
+              </span>
+              ${!isFullMock ? `<span class="text-xs text-slate-400 dark:text-[#8A8A9E]">${section}</span>` : ''}
+              ${easyCount > 0 ? `<span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">${easyCount} Easy</span>` : ''}
+              ${mediumCount > 0 ? `<span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">${mediumCount} Med</span>` : ''}
+              ${hardCount > 0 ? `<span class="text-xs px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400">${hardCount} Hard</span>` : ''}
+            </div>
+            
+            <!-- Meta info -->
+            <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-[#8A8A9E] mb-4">
+              <span class="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-200/60 dark:border-slate-700/50">
+                <span class="text-sm">⏱️</span> ${time} min
+              </span>
+              <span class="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-200/60 dark:border-slate-700/50">
+                <span class="text-sm">📋</span> ${questionCount} Q
+              </span>
+            </div>
+            
+            <!-- Section breakdown for full mock tests -->
+            ${isFullMock && Object.keys(sections).length > 0 ? `
+              <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl">
+                <p class="text-xs font-medium text-slate-500 dark:text-[#8A8A9E] mb-2">Section Breakdown:</p>
+                <div class="flex flex-wrap gap-2">
+                  ${Object.entries(sections).slice(0, 4).map(([sec, count]) => `
+                    <span class="text-xs px-2 py-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+                      ${sec.length > 12 ? sec.substring(0, 10) + '…' : sec}: ${count}
+                    </span>
+                  `).join('')}
+                  ${Object.keys(sections).length > 4 ? `<span class="text-xs px-2 py-1 bg-white dark:bg-slate-700 rounded-lg">+${Object.keys(sections).length - 4} more</span>` : ''}
+                </div>
+              </div>
+            ` : ''}
+            
+            <!-- Action button -->
+            <button onclick="${questionCount > 0 ? `startTest('${test.id}', '${title.replace(/'/g, "\\'")}', ${time})` : 'alertTestEmpty()'}" 
+              class="w-full px-5 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 text-sm
+              ${questionCount > 0 ? 
+                'bg-gradient-to-r from-slate-800 to-slate-900 hover:from-blue-600 hover:to-indigo-600 dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-700 dark:hover:to-indigo-700 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:scale-95' : 
+                'bg-slate-200 text-slate-500 cursor-not-allowed dark:bg-slate-800/50'}">
+              ${questionCount > 0 ? 'start assessment →' : '⚠️ no questions yet'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function startTest(testId, testTitle, timeLimit) {
+      localStorage.setItem("currentTestId", testId);
+      localStorage.setItem("currentTestTitle", testTitle);
+      localStorage.setItem("currentTestTime", timeLimit || 30);
+      
+      // Go to instructions page
+      window.location.href = "instructions.html";
+    }
+
+    function alertTestEmpty() {
+      alert("⚠️ This test has no questions yet. Please check back later or contact admin.");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>quiet practice · ai engine</title>
+
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyqS7iZujmdJ-Vwg5yrRfS24yW-VzG540",
+      authDomain: "placement-portal-465c2.firebaseapp.com",
+      projectId: "placement-portal-465c2",
+      storageBucket: "placement-portal-465c2.firebasestorage.app",
+      messagingSenderId: "60536248254",
+      appId: "1:60536248254:web:2b4fe5996029c4712e0bef",
+      measurementId: "G-F1T6X08PZ7"
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    if (!localStorage.getItem("username")) window.location.href = "login.html";
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'monospace'] },
+          animation: { 
+            'fade-in': 'fadeIn 0.4s ease-out',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite',
+          },
+          keyframes: { 
+            fadeIn: { '0%': { opacity: '0', transform: 'translateY(6px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-8px)' } },
+            glow: { '0%, 100%': { boxShadow: '0 0 5px rgba(139, 92, 246, 0.3)' }, '50%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.6)' } },
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #f8f8fc; }
+    .dark body { background-color: #0c0c0f; }
+    .bg-subtle-grid { background-image: linear-gradient(rgba(180, 180, 200, 0.1) 1px, transparent 1px), linear-gradient(to right, rgba(180, 180, 200, 0.05) 1px, transparent 1px); background-size: 48px 48px; }
+    
+    .radio-custom {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .dark .radio-custom {
+      border-color: #475569;
+    }
+    .radio-custom:checked {
+      border-color: #8b5cf6;
+      background-color: #8b5cf6;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+    .radio-custom:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      background-color: white;
+      border-radius: 50%;
+    }
+    
+    .custom-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.25rem;
+      appearance: none;
+      padding-right: 2.5rem;
+    }
+    .dark .custom-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .typing-cursor::after {
+      content: '|';
+      animation: blink 1s step-end infinite;
+      margin-left: 2px;
+    }
+  </style>
+</head>
+<body class="dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 antialiased font-sans min-h-screen flex items-center justify-center p-5 relative">
+
+  <div class="absolute inset-0 bg-subtle-grid opacity-30 dark:opacity-20 pointer-events-none"></div>
+  <div class="fixed top-20 -right-20 w-80 h-80 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-[120px] z-[-1] animate-float"></div>
+  <div class="fixed bottom-20 -left-20 w-96 h-96 bg-indigo-200/30 dark:bg-indigo-800/20 rounded-full blur-[140px] z-[-1]" style="animation-delay: -3s;"></div>
+
+  <div class="w-full max-w-lg mx-auto relative z-10 animate-fade-in">
+    <button onclick="window.location.href='index.html'" class="mb-6 flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-300 transition-all group">
+      <span class="group-hover:-translate-x-1 transition">←</span> back to dashboard
+    </button>
+
+    <div class="rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/70 backdrop-blur-sm shadow-xl overflow-hidden">
+      <div class="px-7 pt-7 pb-4 flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800">
+        <div>
+          <span class="text-xs font-medium bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent tracking-widest uppercase">adaptive · ai</span>
+          <h2 class="text-2xl font-display font-semibold tracking-tight">practice engine</h2>
+        </div>
+        <div class="text-purple-500 text-lg animate-pulse-slow">✨</div>
+      </div>
+
+      <div id="aiConfigSection" class="p-7 space-y-6">
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wide flex items-center gap-2">
+            <span>🏛️</span> Firm
+          </label>
+          <select id="aiCompany" onchange="updateAISectionDropdown()" class="custom-select w-full px-4 py-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm focus:border-purple-500 dark:focus:border-purple-500 outline-none transition-all">
+            <option value="TCS">TCS (Tata Consultancy Services)</option>
+            <option value="Wipro">Wipro · Elite</option>
+            <option value="Infosys">Infosys · SP/DSE</option>
+            <option value="Accenture">Accenture · ASE</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wide flex items-center gap-2">
+            <span>⚡</span> Format
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="cursor-pointer group">
+              <input type="radio" name="aiTestType" value="sectional" class="peer sr-only" checked onchange="toggleAISection()">
+              <div class="p-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 text-center transition-all duration-200 group-hover:border-purple-300">
+                <span class="text-sm font-medium">📚 sectional</span>
+              </div>
+            </label>
+            <label class="cursor-pointer group">
+              <input type="radio" name="aiTestType" value="fullmock" class="peer sr-only" onchange="toggleAISection()">
+              <div class="p-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 text-center transition-all duration-200 group-hover:border-purple-300">
+                <span class="text-sm font-medium">📋 full mock</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div id="aiSectionWrapper" class="space-y-1.5">
+          <label class="text-xs font-medium text-neutral-500 uppercase tracking-wide flex items-center gap-2">
+            <span>📘</span> Subject
+          </label>
+          <select id="aiSection" class="custom-select w-full px-4 py-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm focus:border-purple-500 dark:focus:border-purple-500 outline-none transition-all"></select>
+        </div>
+
+        <button onclick="generateAndStartTest()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group">
+          <span class="group-hover:animate-pulse">✨</span>
+          generate cloud practice →
+        </button>
+        
+        <p class="text-center text-[10px] text-neutral-400 dark:text-neutral-500">
+          Powered by Groq AI · Generates 10 questions instantly
+        </p>
+      </div>
+
+      <div id="aiLoadingSection" class="p-8 flex flex-col items-center justify-center hidden min-h-[400px]">
+        <div class="relative">
+          <div class="w-16 h-16 border-4 border-purple-200 dark:border-purple-900 border-t-purple-600 dark:border-t-purple-400 rounded-full animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-2xl animate-pulse">🧠</span>
+          </div>
+        </div>
+        <h3 class="text-xl font-display font-medium mt-6">assembling cloud test</h3>
+        <p id="termStatus" class="text-sm text-neutral-400 dark:text-neutral-500 mt-4 font-mono typing-cursor">> initializing AI engine...</p>
+        <div class="mt-6 w-full max-w-xs">
+          <div class="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+            <div id="loadingProgress" class="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Groq API Key (Updated)
+const API_KEY = "YOUR_API_KEY";    
+    const companySections = {
+      "TCS": ["Numerical Ability", "Logical Reasoning", "Verbal Ability"],
+      "Wipro": ["Aptitude", "Logical Ability", "Verbal Ability"],
+      "Infosys": ["Easy", "Medium", "Hard", "Pseudocode"],
+      "Accenture": ["Cognitive", "Technical", "Communication"]
+    };
+
+    function toggleAISection() {
+      const isFullMock = document.querySelector('input[name="aiTestType"]:checked').value === 'fullmock';
+      const sectionWrapper = document.getElementById('aiSectionWrapper');
+      if (sectionWrapper) {
+        sectionWrapper.style.display = isFullMock ? 'none' : 'block';
+      }
+    }
+
+    function updateAISectionDropdown() {
+      const company = document.getElementById('aiCompany').value;
+      const dropdown = document.getElementById('aiSection');
+      if (dropdown && companySections[company]) {
+        dropdown.innerHTML = companySections[company].map(s => `<option value="${s}">${s}</option>`).join('');
+      }
+    }
+
+    async function generateAndStartTest() {
+      const company = document.getElementById('aiCompany').value;
+      const type = document.querySelector('input[name="aiTestType"]:checked').value;
+      const section = type === 'fullmock' ? 'Full Length' : document.getElementById('aiSection').value;
+      
+      const configSection = document.getElementById('aiConfigSection');
+      const loadingSection = document.getElementById('aiLoadingSection');
+      const termStatus = document.getElementById('termStatus');
+      const loadingProgress = document.getElementById('loadingProgress');
+      
+      configSection.classList.add('hidden');
+      loadingSection.classList.remove('hidden');
+      
+      const statusMessages = [
+        "> connecting to AI cloud...",
+        "> generating questions...",
+        "> processing responses...",
+        "> saving to database...",
+        "> almost ready..."
+      ];
+      
+      let msgIndex = 0;
+      const statusInterval = setInterval(() => {
+        if (msgIndex < statusMessages.length) {
+          termStatus.innerText = statusMessages[msgIndex];
+          loadingProgress.style.width = `${(msgIndex + 1) * 20}%`;
+          msgIndex++;
+        }
+      }, 800);
+
+      try {
+        const prompt = `Generate exactly 10 multiple-choice questions for ${company} placement, subject: ${section}. Each question should be relevant to the actual placement exam pattern. Return ONLY JSON array in this exact format: [{"text": "Question text here", "options": ["Option A", "Option B", "Option C", "Option D"], "correct": 0, "difficulty": "Medium"}] where correct is the index (0-3) of the correct answer.`;
+
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { 
+            "Authorization": `Bearer ${GROQ_API_KEY}`, 
+            "Content-Type": "application/json" 
+          },
+          body: JSON.stringify({ 
+            messages: [{ role: "user", content: prompt }], 
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.7
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+        const jsonMatch = content.match(/\[[\s\S]*\]/);
+        
+        if (!jsonMatch) {
+          throw new Error("Invalid AI response format");
+        }
+        
+        const generatedQs = JSON.parse(jsonMatch[0]);
+        
+        if (!generatedQs || generatedQs.length === 0) {
+          throw new Error("No questions generated");
+        }
+
+        // 1. SAVE TEST TO FIREBASE CLOUD
+        const testRef = await db.collection("tests").add({
+          type, 
+          company, 
+          section,
+          title: `${company} · ${section} (AI Generated)`,
+          time: type === 'fullmock' ? 60 : 30,
+          createdAt: new Date().toISOString(),
+          source: "AI"
+        });
+
+        // 2. SAVE QUESTIONS TO FIREBASE CLOUD
+        for (const q of generatedQs) {
+          await db.collection("questions").add({
+            testId: testRef.id,
+            text: q.text,
+            options: q.options,
+            correct: q.correct,
+            subject: section,
+            level: q.difficulty || "Medium"
+          });
+        }
+
+        clearInterval(statusInterval);
+        termStatus.innerText = "> redirecting to test...";
+        loadingProgress.style.width = "100%";
+        
+        setTimeout(() => {
+          localStorage.setItem("currentTestId", testRef.id);
+          localStorage.setItem("currentTestTime", type === 'fullmock' ? 60 : 30);
+          localStorage.setItem("currentTestTitle", `${company} · ${section} (AI)`);
+          window.location.href = "instructions.html";
+        }, 500);
+
+      } catch (error) {
+        console.error("AI Generation Error:", error);
+        clearInterval(statusInterval);
+        termStatus.innerText = "> error: generation failed. please try again.";
+        loadingProgress.style.width = "100%";
+        loadingProgress.classList.add("bg-red-500");
+        
+        setTimeout(() => {
+          alert("AI Generation failed: " + error.message + "\n\nPlease check your API key or try again later.");
+          window.location.reload();
+        }, 1500);
+      }
+    }
+
+    window.onload = () => {
+      updateAISectionDropdown();
+      toggleAISection();
+      
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+  </script>
+</body>
+</html>

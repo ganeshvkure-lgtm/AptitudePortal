@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infosys Regular · aptitude portal</title>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyqS7iZujmdJ-Vwg5yrRfS24yW-VzG540",
+      authDomain: "placement-portal-465c2.firebaseapp.com",
+      projectId: "placement-portal-465c2",
+      storageBucket: "placement-portal-465c2.firebasestorage.app",
+      messagingSenderId: "60536248254",
+      appId: "1:60536248254:web:2b4fe5996029c4712e0bef",
+      measurementId: "G-F1T6X08PZ7"
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    if (!localStorage.getItem("username")) window.location.href = "login.html";
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { 
+        extend: { 
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            deep: { 950: '#0B0B12', 900: '#13131C', 800: '#1E1E2A' },
+            infosys: { 50: '#ecfeff', 100: '#cffafe', 600: '#0891b2', 400: '#22d3ee' },
+            regular: { 50: '#f0f9ff', 100: '#e0f2fe', 600: '#0284c7', 400: '#38bdf8' }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+          },
+        } 
+      }
+    }
+  </script>
+
+  <style>
+    .fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    
+    .bg-grid-pattern {
+      background-image: radial-gradient(rgba(2, 132, 199, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .dark body { background-color: #0B0B12; }
+    .dark .bg-white { background-color: #16161F !important; }
+    .dark .border-slate-200 { border-color: #2A2A37 !important; }
+    .dark .text-slate-500 { color: #8A8A9E !important; }
+    .dark .text-slate-600 { color: #B0B0C0 !important; }
+
+    .tab-active {
+      background: linear-gradient(135deg, #0284c7, #0891b2) !important;
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3) !important;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 10px;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
+</head>
+
+<body class="bg-soft-50 dark:bg-[#0B0B12] text-slate-900 dark:text-slate-200 min-h-screen flex flex-col font-sans antialiased relative overflow-x-hidden">
+
+  <div class="absolute inset-0 z-[-1] bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:linear-gradient(to_bottom,black,transparent)] pointer-events-none"></div>
+  <div class="fixed top-20 -left-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-[120px] z-[-1] animate-float"></div>
+  <div class="fixed bottom-20 -right-20 w-96 h-96 bg-sky-200/30 dark:bg-sky-800/20 rounded-full blur-[140px] z-[-1]" style="animation-delay: -3s;"></div>
+
+  <nav class="sticky top-4 z-50 max-w-7xl mx-auto w-[calc(100%-2.5rem)] px-5 py-3 rounded-2xl bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-xl border border-white/30 dark:border-[#2A2A37]/80 shadow-sm">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+        <span class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-2.5 py-1 rounded-lg text-sm font-bold tracking-wider">INFOSYS</span>
+        <span class="text-xl font-semibold tracking-tight">
+          <span class="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Regular</span>
+          <span class="text-slate-500 dark:text-slate-500 font-light mx-1">/</span>
+          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">practice</span>
+        </span>
+      </div>
+      
+      <!-- Role Toggle Desktop -->
+      <div class="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-full p-1">
+        <button onclick="window.location.href='infosys.html'" class="px-4 py-1.5 rounded-full text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all">SP/DSE</button>
+        <button onclick="window.location.href='infosys-regular.html'" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-sm">Regular</button>
+      </div>
+      
+      <button onclick="window.location.href='index.html'" class="px-5 py-2 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#262633] text-sm font-medium shadow-sm transition-all flex items-center gap-2 active:scale-95">
+        <span>←</span> <span class="hidden sm:inline">back</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="flex-grow max-w-7xl mx-auto w-full px-5 sm:px-6 py-12 flex flex-col items-center">
+    
+    <div class="text-center mb-12 w-full">
+      <div class="fade-up inline-flex flex-col items-center">
+        <div class="mb-5 p-5 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-3xl shadow-lg">
+          <span class="text-6xl drop-shadow-md">👨‍💻</span>
+        </div>
+        <span class="text-xs uppercase tracking-[0.3em] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-[#1E1E2A] px-4 py-2 rounded-full border border-blue-100 dark:border-[#353542] mb-4">systems engineer · regular hiring</span>
+        <h1 class="text-4xl md:text-5xl font-medium tracking-tight mb-4 text-slate-800 dark:text-white max-w-3xl">
+          Infosys Regular
+        </h1>
+        <p class="text-lg text-slate-500 dark:text-[#B0B0C0] max-w-2xl mx-auto leading-relaxed">
+          Standard Pattern · 54 Questions · 100 Minutes
+        </p>
+        <div class="mt-4 flex flex-wrap justify-center gap-2">
+          <span class="text-xs px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full">📊 Mixed Sections</span>
+          <span class="text-xs px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full">⏱️ 100 mins</span>
+          <span class="text-xs px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full">📋 54 Questions</span>
+        </div>
+      </div>
+
+      <!-- Mobile Role Toggle -->
+      <div class="mt-6 flex justify-center md:hidden">
+        <div class="inline-flex rounded-full border border-slate-200 dark:border-[#2A2A37] p-1 bg-white/50 dark:bg-[#16161F]/50 backdrop-blur-sm">
+          <button onclick="window.location.href='infosys.html'" class="px-4 py-1.5 rounded-full text-xs font-medium text-slate-500 dark:text-slate-400">SP/DSE</button>
+          <button onclick="window.location.href='infosys-regular.html'" class="px-4 py-1.5 rounded-full text-xs font-medium bg-blue-600 text-white">Regular</button>
+        </div>
+      </div>
+
+      <!-- Section Filter Tabs - Complete Infosys Regular Pattern -->
+      <div class="fade-up flex overflow-x-auto no-scrollbar justify-center gap-2 md:gap-3 max-w-5xl mx-auto mt-8 p-1.5 bg-white/50 dark:bg-[#16161F]/60 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-2xl shadow-sm">
+        <button onclick="filterTests('All')" id="tab-All" class="tab-btn flex-1 min-w-[80px] px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-blue-600 text-white shadow-md">All</button>
+        <button onclick="filterTests('Logical Reasoning')" id="tab-Logical Reasoning" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all">Logical</button>
+        <button onclick="filterTests('Mathematical Ability')" id="tab-Mathematical Ability" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all">Math</button>
+        <button onclick="filterTests('Verbal Ability')" id="tab-Verbal Ability" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all">Verbal</button>
+        <button onclick="filterTests('Pseudocode')" id="tab-Pseudocode" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all">Pseudocode</button>
+        <button onclick="filterTests('Puzzle Solving')" id="tab-Puzzle Solving" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all">Puzzles</button>
+        <button onclick="filterTests('Coding')" id="tab-Coding" class="tab-btn flex-1 min-w-[100px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all">Coding</button>
+      </div>
+
+      <!-- Pattern Info Card -->
+      <div class="mt-6 max-w-3xl mx-auto bg-blue-50/50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-100 dark:border-blue-800/30">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs">
+          <div class="p-2">
+            <span class="block font-bold text-blue-600 dark:text-blue-400">15</span>
+            <span class="text-slate-500 dark:text-slate-400">Logical</span>
+          </div>
+          <div class="p-2">
+            <span class="block font-bold text-blue-600 dark:text-blue-400">10</span>
+            <span class="text-slate-500 dark:text-slate-400">Math</span>
+          </div>
+          <div class="p-2">
+            <span class="block font-bold text-blue-600 dark:text-blue-400">20</span>
+            <span class="text-slate-500 dark:text-slate-400">Verbal</span>
+          </div>
+          <div class="p-2">
+            <span class="block font-bold text-blue-600 dark:text-blue-400">4</span>
+            <span class="text-slate-500 dark:text-slate-400">Pseudocode</span>
+          </div>
+          <div class="p-2">
+            <span class="block font-bold text-blue-600 dark:text-blue-400">5</span>
+            <span class="text-slate-500 dark:text-slate-400">Puzzles</span>
+          </div>
+        </div>
+        <p class="text-center text-xs text-slate-500 dark:text-slate-400 mt-2">
+          Total: 54 Questions | Duration: 100 Minutes | No Negative Marking
+        </p>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-20 hidden w-full">
+      <div class="inline-flex flex-col items-center">
+        <div class="w-12 h-12 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-slate-500 dark:text-slate-400">Loading practice tests...</p>
+      </div>
+    </div>
+
+    <div id="testGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full mb-16 max-w-6xl"></div>
+
+  </main>
+
+  <footer class="w-full border-t border-slate-200/60 dark:border-[#2A2A37]/80 py-8 text-center text-slate-400 dark:text-[#6B6B80] text-sm">
+    <p>© 2026 aptitude portal · infosys regular pattern</p>
+  </footer>
+
+  <script>
+    let currentFilter = 'All';
+    let allTests = [];
+    let allQuestions = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      loadTests();
+      setTimeout(() => document.querySelectorAll('.fade-up').forEach((el) => el.classList.add('visible')), 50);
+    });
+
+    async function loadTests() {
+      const loadingState = document.getElementById('loadingState');
+      const grid = document.getElementById('testGrid');
+      
+      loadingState.classList.remove('hidden');
+      grid.innerHTML = '';
+
+      try {
+        // Fetch tests from Firestore for Infosys Regular (sectional only)
+        const testsSnap = await db.collection("tests")
+          .where("company", "==", "Infosys")
+          .where("type", "==", "sectional")
+          .get();
+        
+        // Fetch all questions
+        const qsSnap = await db.collection("questions").get();
+        allQuestions = qsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        allTests = testsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTests();
+      } catch (e) {
+        console.error("Cloud Error:", e);
+        // Fallback to localStorage
+        try {
+          allTests = JSON.parse(localStorage.getItem('mockTestsDB')) || [];
+          allTests = allTests.filter(t => t && t.company === 'Infosys' && t.type !== 'fullmock');
+          allQuestions = JSON.parse(localStorage.getItem('customQuestions')) || [];
+          renderTests();
+        } catch (err) {
+          grid.innerHTML = `<div class="col-span-full py-20 text-center text-red-500">❌ Failed to load tests. Please check your connection.</div>`;
+        }
+      } finally {
+        loadingState.classList.add('hidden');
+      }
+    }
+
+    function filterTests(section) {
+      currentFilter = section;
+      
+      document.querySelectorAll('.tab-btn').forEach(tab => {
+        tab.className = "tab-btn flex-1 min-w-[80px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-all";
+        tab.style.background = "";
+        tab.style.color = "";
+        tab.style.boxShadow = "none";
+      });
+      
+      const activeTab = document.getElementById(`tab-${section}`);
+      if(activeTab) {
+        activeTab.className = "tab-btn flex-1 min-w-[80px] px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-blue-600 text-white shadow-md";
+      }
+
+      renderTests();
+    }
+
+    function renderTests() {
+      const grid = document.getElementById('testGrid');
+
+      // Apply specific filter rules
+      let companyTests = allTests.filter(t => t && t.company === 'Infosys' && t.type !== 'fullmock');
+
+      if (currentFilter !== 'All') {
+        companyTests = companyTests.filter(t => t.section === currentFilter);
+      }
+
+      const previewTestId = localStorage.getItem('previewTestId');
+
+      if (companyTests.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-20 flex flex-col items-center justify-center"><div class="fade-up visible text-center"><div class="text-7xl mb-6 opacity-40">📭</div><h3 class="text-2xl font-medium text-slate-600 dark:text-slate-300 mb-3">No sectional tests available</h3><p class="text-slate-500 dark:text-[#8A8A9E] max-w-md mx-auto">Check back later for new practice tests.</p></div></div>`;
+        return;
+      }
+
+      // Sort by section order
+      const sectionOrder = {
+        'Logical Reasoning': 1, 
+        'Mathematical Ability': 2, 
+        'Verbal Ability': 3, 
+        'Pseudocode': 4, 
+        'Puzzle Solving': 5, 
+        'Coding': 6
+      };
+      const sortedTests = companyTests.sort((a, b) => (sectionOrder[a.section] || 99) - (sectionOrder[b.section] || 99));
+
+      grid.innerHTML = sortedTests.map((test, index) => {
+        const testQuestions = allQuestions.filter(q => q.testId === test.id);
+        const questionCount = testQuestions.length;
+        const isPreview = test.id === previewTestId;
+        
+        // Calculate difficulty distribution
+        const easyCount = testQuestions.filter(q => q.level === 'Easy').length;
+        const mediumCount = testQuestions.filter(q => q.level === 'Medium').length;
+        const hardCount = testQuestions.filter(q => q.level === 'Hard').length;
+
+        // Determine icon and color based on section
+        let icon = '📋';
+        let sectionColor = 'blue';
+        let gradientFrom = 'from-blue-600';
+        let gradientTo = 'to-cyan-600';
+        let sectionName = test.section || 'General';
+        
+        if (sectionName.includes('Logical')) {
+          icon = '🧠';
+          sectionColor = 'purple';
+          gradientFrom = 'from-purple-600';
+          gradientTo = 'to-indigo-600';
+        } else if (sectionName.includes('Mathematical')) {
+          icon = '🔢';
+          sectionColor = 'emerald';
+          gradientFrom = 'from-emerald-600';
+          gradientTo = 'to-teal-600';
+        } else if (sectionName.includes('Verbal')) {
+          icon = '📝';
+          sectionColor = 'amber';
+          gradientFrom = 'from-amber-600';
+          gradientTo = 'to-orange-600';
+        } else if (sectionName.includes('Pseudocode')) {
+          icon = '📟';
+          sectionColor = 'indigo';
+          gradientFrom = 'from-indigo-600';
+          gradientTo = 'to-purple-600';
+        } else if (sectionName.includes('Puzzle')) {
+          icon = '🧩';
+          sectionColor = 'rose';
+          gradientFrom = 'from-rose-600';
+          gradientTo = 'to-red-600';
+        } else if (sectionName.includes('Coding')) {
+          icon = '💻';
+          sectionColor = 'cyan';
+          gradientFrom = 'from-cyan-600';
+          gradientTo = 'to-teal-600';
+        }
+
+        // Map section names to display names
+        let displaySection = sectionName;
+        if (sectionName === 'Mathematical Ability') displaySection = 'Mathematics';
+        else if (sectionName === 'Logical Reasoning') displaySection = 'Logical';
+        else if (sectionName === 'Verbal Ability') displaySection = 'Verbal';
+        else if (sectionName === 'Puzzle Solving') displaySection = 'Puzzles';
+
+        return `
+          <div class="fade-up group bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border ${isPreview ? 'border-blue-500 ring-4 ring-blue-200 dark:ring-blue-900/50' : 'border-slate-200/60 dark:border-[#2A2A37]/80'} rounded-3xl p-7 hover:bg-white dark:hover:bg-[#1C1C28] hover:border-${sectionColor}-300 dark:hover:border-${sectionColor}-700/80 hover:shadow-xl transition-all duration-300 relative" style="transition-delay: ${index * 50}ms">
+            
+            ${isPreview ? '<div class="absolute -top-2 -right-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold z-10 shadow-lg">Preview</div>' : ''}
+            
+            <div class="w-14 h-14 mb-5 bg-${sectionColor}-50 dark:bg-${sectionColor}-900/20 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+              <span class="text-3xl">${icon}</span>
+            </div>
+            
+            <h3 class="text-xl font-semibold mb-1 tracking-tight truncate" title="${test.title}">${test.title}</h3>
+            
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/30">
+                Infosys
+              </span>
+              <span class="text-xs px-2 py-1 rounded-full bg-${sectionColor}-100 dark:bg-${sectionColor}-900/30 text-${sectionColor}-700 dark:text-${sectionColor}-400 border border-${sectionColor}-200 dark:border-${sectionColor}-800/30">
+                ${displaySection}
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-3 text-slate-500 dark:text-[#8A8A9E] text-sm mb-4">
+              <span class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-200/60 dark:border-slate-700/50">
+                <span class="text-sm">⏱️</span> ${test.time} min
+              </span>
+              <span class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-200/60 dark:border-slate-700/50">
+                <span class="text-sm">📋</span> ${questionCount} Q
+              </span>
+            </div>
+            
+            ${questionCount > 0 ? `
+              <div class="flex flex-wrap gap-1 mb-4">
+                ${easyCount > 0 ? `<span class="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full border border-emerald-200 dark:border-emerald-800/30">${easyCount} Easy</span>` : ''}
+                ${mediumCount > 0 ? `<span class="text-xs px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full border border-amber-200 dark:border-amber-800/30">${mediumCount} Med</span>` : ''}
+                ${hardCount > 0 ? `<span class="text-xs px-2 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 rounded-full border border-rose-200 dark:border-rose-800/30">${hardCount} Hard</span>` : ''}
+              </div>
+            ` : ''}
+            
+            <button onclick="${questionCount > 0 ? `startTest('${test.id}', ${test.time}, '${test.title.replace(/'/g, "\\'")}')` : 'alertTestEmpty()'}" 
+              class="w-full px-5 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 text-sm mt-auto
+              ${questionCount > 0 ? 
+                'bg-gradient-to-r from-slate-800 to-slate-900 hover:from-blue-600 hover:to-cyan-600 dark:from-blue-600 dark:to-cyan-600 dark:hover:from-blue-700 dark:hover:to-cyan-700 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:scale-95' : 
+                'bg-slate-200 text-slate-500 cursor-not-allowed dark:bg-slate-800/50'}">
+              ${questionCount > 0 ? 'attempt →' : '⚠️ no questions'}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      if (previewTestId) {
+        setTimeout(() => {
+          localStorage.removeItem('previewTestId');
+        }, 5000);
+      }
+      setTimeout(() => grid.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible')), 10);
+    }
+
+    function startTest(id, timeLimit, title) {
+      const test = allTests.find(t => t.id === id);
+      
+      if (!test) {
+        alert("Test not found!");
+        return;
+      }
+      
+      localStorage.setItem("currentTestId", id);
+      localStorage.setItem("currentTestTime", timeLimit || 30);
+      localStorage.setItem("currentTestTitle", title || test.title);
+      localStorage.setItem("currentCompany", test.company);
+      localStorage.setItem("currentSection", test.section);
+      
+      window.location.href = "instructions.html";
+    }
+
+    function alertTestEmpty() {
+      alert("⚠️ This test has no questions yet. Please check back later.");
+    }
+  </script>
+</body>
+</html>

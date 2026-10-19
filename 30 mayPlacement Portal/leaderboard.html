@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard · aptitude portal</title>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyqS7iZujmdJ-Vwg5yrRfS24yW-VzG540",
+      authDomain: "placement-portal-465c2.firebaseapp.com",
+      projectId: "placement-portal-465c2",
+      storageBucket: "placement-portal-465c2.firebasestorage.app",
+      messagingSenderId: "60536248254",
+      appId: "1:60536248254:web:2b4fe5996029c4712e0bef",
+      measurementId: "G-F1T6X08PZ7"
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    if (!localStorage.getItem("username")) {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'shimmer': 'shimmer 2s infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            },
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background: #f8fafc; }
+    .dark body { background: #0B0B12; }
+    .glass { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.3); }
+    .dark .glass { background: rgba(22, 22, 31, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
+    .bg-grid { background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 24px 24px; }
+    .dark .bg-grid { background-image: radial-gradient(#1e293b 1px, transparent 1px); }
+    
+    .rank-1 { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+    .rank-2 { background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%); color: white; }
+    .rank-3 { background: linear-gradient(135deg, #fdba74 0%, #ea580c 100%); color: white; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 10px;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+    
+    /* Table row hover */
+    .leaderboard-row {
+      transition: all 0.2s ease;
+    }
+    .leaderboard-row:hover {
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateX(4px);
+    }
+    .dark .leaderboard-row:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+  </style>
+</head>
+<body class="text-slate-900 dark:text-slate-200 min-h-screen font-sans antialiased bg-grid">
+
+  <div class="fixed top-20 -right-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-[120px] z-[-1] animate-float"></div>
+  <div class="fixed bottom-20 -left-20 w-96 h-96 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-[140px] z-[-1]" style="animation-delay: -3s;"></div>
+
+  <nav class="sticky top-4 z-50 max-w-7xl mx-auto w-[calc(100%-2.5rem)] px-5 py-3 rounded-2xl bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-xl border border-white/30 dark:border-[#2A2A37]/80 shadow-sm">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+        <span class="text-xl font-semibold tracking-tight">
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">aptitude</span>
+          <span class="text-slate-500 dark:text-slate-500 font-light mx-1">/</span>
+          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">rankings</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-slate-400 dark:text-[#6B6B80] hidden sm:block">👋 <span id="usernameDisplay">Guest</span></span>
+        <button onclick="window.location.href='index.html'" class="px-4 py-2 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#262633] text-sm font-medium shadow-sm transition-all flex items-center gap-1 active:scale-95">
+          <span>←</span> home
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800/30 mb-4">
+        <span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+        <span class="text-[10px] font-extrabold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Global Rankings</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Leaderboard</h1>
+      <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto">Top performers across all cloud assessments</p>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-10">
+      <div class="glass rounded-2xl p-5 text-center">
+        <span class="text-3xl mb-2 block">🏆</span>
+        <p class="text-xs text-slate-500 uppercase tracking-wider">Top Score</p>
+        <p id="topScore" class="text-2xl font-bold text-blue-600">0%</p>
+      </div>
+      <div class="glass rounded-2xl p-5 text-center">
+        <span class="text-3xl mb-2 block">👥</span>
+        <p class="text-xs text-slate-500 uppercase tracking-wider">Total Participants</p>
+        <p id="totalParticipants" class="text-2xl font-bold text-purple-600">0</p>
+      </div>
+      <div class="glass rounded-2xl p-5 text-center">
+        <span class="text-3xl mb-2 block">📋</span>
+        <p class="text-xs text-slate-500 uppercase tracking-wider">Total Tests</p>
+        <p id="totalTests" class="text-2xl font-bold text-emerald-600">0</p>
+      </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="glass rounded-[32px] overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-slate-200 dark:border-slate-700">
+              <th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 w-20">Rank</th>
+              <th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Student</th>
+              <th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 hidden md:table-cell">Test</th>
+              <th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 w-24">Score</th>
+              <th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 w-24">Accuracy</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            <tr>
+              <td colspan="5" class="px-6 py-20 text-center">
+                <div class="flex flex-col items-center gap-3">
+                  <div class="w-10 h-10 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 rounded-full animate-spin"></div>
+                  <p class="text-slate-500">Loading rankings...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Refresh Button -->
+    <div class="text-center mt-8">
+      <button onclick="loadLeaderboard()" class="px-6 py-2.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all inline-flex items-center gap-2">
+        <span>🔄</span> Refresh Rankings
+      </button>
+    </div>
+  </main>
+
+  <footer class="w-full border-t border-slate-200/60 dark:border-slate-800 py-6 text-center text-slate-400 text-xs mt-8">
+    <p>© 2026 aptitude portal · top performers</p>
+  </footer>
+
+  <script>
+    async function loadLeaderboard() {
+      const container = document.getElementById('leaderboardBody');
+      container.innerHTML = `
+        <tr>
+          <td colspan="5" class="px-6 py-20 text-center">
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-10 h-10 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 rounded-full animate-spin"></div>
+              <p class="text-slate-500">Loading rankings...</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      
+      try {
+        // Fetch top 100 results sorted by percentage descending
+        const snapshot = await db.collection("results")
+          .orderBy("percentage", "desc")
+          .limit(100)
+          .get();
+
+        // Get all unique participants for stats
+        const allResultsSnap = await db.collection("results").get();
+        const uniqueUsers = new Set();
+        allResultsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.username) uniqueUsers.add(data.username);
+        });
+        
+        document.getElementById('totalParticipants').innerText = uniqueUsers.size;
+        document.getElementById('totalTests').innerText = allResultsSnap.size;
+        
+        let topPercent = 0;
+        if (!snapshot.empty) {
+          topPercent = snapshot.docs[0].data().percentage || 0;
+        }
+        document.getElementById('topScore').innerText = topPercent + '%';
+
+        if (snapshot.empty) {
+          container.innerHTML = `
+            <tr>
+              <td colspan="5" class="px-6 py-20 text-center opacity-50">
+                <div class="text-5xl mb-3">📭</div>
+                <p>No rankings available yet. Complete a test to appear on the leaderboard!</p>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        let html = '';
+        let currentRank = 1;
+        let lastPercentage = null;
+        let rankOffset = 0;
+        
+        snapshot.docs.forEach((doc, index) => {
+          const res = doc.data();
+          const percentage = res.percentage || 0;
+          const score = res.score || 0;
+          const total = res.total || 0;
+          const username = res.username || "Anonymous";
+          const testTitle = res.testTitle || "Practice Test";
+          
+          // Handle tie ranking
+          if (lastPercentage !== null && percentage === lastPercentage) {
+            rankOffset++;
+          } else {
+            currentRank = index + 1 - rankOffset;
+          }
+          lastPercentage = percentage;
+          
+          let rankClass = '';
+          let rankIcon = '';
+          if (currentRank === 1) {
+            rankClass = 'rank-1';
+            rankIcon = '🥇';
+          } else if (currentRank === 2) {
+            rankClass = 'rank-2';
+            rankIcon = '🥈';
+          } else if (currentRank === 3) {
+            rankClass = 'rank-3';
+            rankIcon = '🥉';
+          }
+          
+          // Determine accuracy color
+          let accuracyColor = '';
+          if (percentage >= 80) accuracyColor = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300';
+          else if (percentage >= 60) accuracyColor = 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+          else if (percentage >= 40) accuracyColor = 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300';
+          else accuracyColor = 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300';
+          
+          html += `
+            <tr class="leaderboard-row border-b border-slate-100 dark:border-slate-800 transition-all duration-200">
+              <td class="px-6 py-5">
+                <div class="flex items-center justify-center w-10 h-10 rounded-xl font-bold text-sm ${rankClass} bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                  ${rankIcon || currentRank}
+                </div>
+              </td>
+              <td class="px-6 py-5">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                    ${username.charAt(0).toUpperCase()}
+                  </div>
+                  <span class="font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(username)}</span>
+                </div>
+              </td>
+              <td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400 hidden md:table-cell max-w-[200px] truncate" title="${escapeHtml(testTitle)}">${escapeHtml(testTitle.length > 30 ? testTitle.substring(0, 30) + '...' : testTitle)}</td>
+              <td class="px-6 py-5 font-mono text-sm font-semibold text-slate-700 dark:text-slate-300">${score}/${total}</td>
+              <td class="px-6 py-5">
+                <span class="px-3 py-1.5 rounded-full text-xs font-bold ${accuracyColor}">
+                  ${percentage}%
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+        
+        container.innerHTML = html;
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-6 py-20 text-center text-red-500">
+              <div class="text-5xl mb-3">⚠️</div>
+              <p>Error loading leaderboard. Please ensure "percentage" index exists in Firebase Console.</p>
+              <p class="text-xs mt-2 text-slate-400">Error: ${e.message}</p>
+            </td>
+          </tr>
+        `;
+      }
+    }
+    
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Display username
+    document.addEventListener("DOMContentLoaded", () => {
+      const username = localStorage.getItem("username");
+      if (username) {
+        document.getElementById("usernameDisplay").innerText = username;
+      }
+      
+      // Dark mode setup
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      
+      loadLeaderboard();
+    });
+  </script>
+</body>
+</html>

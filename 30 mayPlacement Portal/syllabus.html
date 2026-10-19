@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Patterns & Syllabus · aptitude portal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300,400,500,600,700,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    if (!localStorage.getItem("username")) window.location.href = "login.html";
+    
+    tailwind.config = {
+      darkMode: 'class', 
+      theme: { 
+        extend: { 
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#f0f7ff', 500: '#3b82f6', 600: '#2563eb' }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+          },
+        } 
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #f8fafc; }
+    .dark body { background-color: #0B0B12; }
+    .glass { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.3); }
+    .dark .glass { background: rgba(22, 22, 31, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
+    
+    .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .bg-grid { background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 24px 24px; }
+    .dark .bg-grid { background-image: radial-gradient(#1e293b 1px, transparent 1px); }
+
+    .pattern-card { transition: all 0.3s ease; }
+    .pattern-card:hover { transform: translateY(-6px); }
+    
+    .tab-btn {
+      transition: all 0.3s ease;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 10px;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
+</head>
+
+<body class="text-slate-900 dark:text-slate-200 min-h-screen font-sans antialiased bg-grid">
+
+  <div class="fixed top-20 -right-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-[120px] z-[-1] animate-float"></div>
+  <div class="fixed bottom-20 -left-20 w-96 h-96 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-[140px] z-[-1]" style="animation-delay: -3s;"></div>
+
+  <nav class="sticky top-4 z-50 max-w-7xl mx-auto w-[calc(100%-2.5rem)] px-5 py-3 rounded-2xl bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-xl border border-white/30 dark:border-[#2A2A37]/80 shadow-sm">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md">P</div>
+        <span class="text-xl font-semibold tracking-tight">
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">aptitude</span>
+          <span class="text-slate-500 dark:text-slate-500 font-light mx-1">/</span>
+          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">patterns</span>
+        </span>
+      </div>
+      <button onclick="window.location.href='index.html'" class="px-4 py-2 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#262633] text-sm font-medium shadow-sm transition-all flex items-center gap-1 active:scale-95">
+        <span>←</span> back
+      </button>
+    </div>
+  </nav>
+
+  <header class="max-w-4xl mx-auto pt-16 pb-10 px-6 text-center">
+    <div class="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800/30 mb-6">
+      <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+      <span class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-blue-600 dark:text-blue-400">B.Tech 2026 Batch Verified</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">Exam Patterns & Syllabus</h1>
+    <p class="text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">Official 2026 recruitment structures for top IT firms. Updated with latest patterns.</p>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 pb-24">
+    
+    <div class="flex flex-wrap justify-center gap-3 mb-12 p-2 glass rounded-[32px] border border-white/20 shadow-lg">
+      <button onclick="showTab('tcs', this, '#2563eb')" id="tab-tcs-btn" class="tab-btn px-6 py-3 rounded-2xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/30 flex items-center gap-2">
+        <span>🏢</span> TCS NQT
+      </button>
+      <button onclick="showTab('wipro', this, '#4f46e5')" id="tab-wipro-btn" class="tab-btn px-6 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-white dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+        <span>💻</span> Wipro Elite
+      </button>
+      <button onclick="showTab('infosys', this, '#0891b2')" id="tab-infosys-btn" class="tab-btn px-6 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-white dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+        <span>🌐</span> Infosys SP/DSE
+      </button>
+      <button onclick="showTab('accenture', this, '#9333ea')" id="tab-accenture-btn" class="tab-btn px-6 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-white dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+        <span>⚡</span> Accenture ASE
+      </button>
+    </div>
+
+    <!-- TCS Tab -->
+    <div id="tcs" class="tab-content active">
+      <div class="glass rounded-[40px] p-8 md:p-12 border border-white/40 shadow-2xl shadow-slate-200/50 dark:shadow-none">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-2xl">🏢</div>
+              <h2 class="text-3xl font-extrabold text-blue-600 dark:text-blue-400">TCS NQT 2026</h2>
+            </div>
+            <p class="text-sm font-bold text-blue-500 uppercase tracking-widest mt-1">Foundation + Advanced Rounds</p>
+          </div>
+          <span class="text-[10px] font-black px-4 py-1.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full border border-green-100 dark:border-green-800/30">LATEST PATTERN</span>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="pattern-card p-6 bg-white/50 dark:bg-slate-800/40 rounded-[32px] border border-slate-100 dark:border-slate-700/50 hover:shadow-xl transition-all">
+            <div class="flex items-center gap-3 mb-5">
+              <span class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg font-bold">01</span>
+              <h3 class="text-lg font-bold">Foundation Round</h3>
+            </div>
+            <ul class="space-y-3 text-sm font-semibold">
+              <li class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <span class="flex items-center gap-2"><span class="text-base">🔢</span> Numerical Ability</span>
+                <span class="text-blue-600 dark:text-blue-400 font-bold">20 Qs</span>
+              </li>
+              <li class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <span class="flex items-center gap-2"><span class="text-base">🧠</span> Logical Reasoning</span>
+                <span class="text-blue-600 dark:text-blue-400 font-bold">20 Qs</span>
+              </li>
+              <li class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <span class="flex items-center gap-2"><span class="text-base">📝</span> Verbal Ability</span>
+                <span class="text-blue-600 dark:text-blue-400 font-bold">25 Qs</span>
+              </li>
+            </ul>
+            <div class="mt-4 pt-3 text-xs text-slate-400 flex items-center justify-between">
+              <span>⏱️ 75 minutes</span>
+              <span>📊 65 Questions</span>
+            </div>
+          </div>
+          <div class="pattern-card p-6 bg-white/50 dark:bg-slate-800/40 rounded-[32px] border border-slate-100 dark:border-slate-700/50 hover:shadow-xl transition-all">
+            <div class="flex items-center gap-3 mb-5">
+              <span class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg font-bold">02</span>
+              <h3 class="text-lg font-bold">Advanced Round</h3>
+            </div>
+            <ul class="space-y-3 text-sm font-semibold">
+              <li class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <span class="flex items-center gap-2"><span class="text-base">📈</span> Advanced Quant</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-bold">15 Qs</span>
+              </li>
+              <li class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <span class="flex items-center gap-2"><span class="text-base">🎯</span> Advanced Reasoning</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-bold">15 Qs</span>
+              </li>
+              <li class="flex justify-between items-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <span class="flex items-center gap-2"><span class="text-base">💻</span> Coding (2 Levels)</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-bold">2 Qs</span>
+              </li>
+            </ul>
+            <div class="mt-4 pt-3 text-xs text-slate-400 flex items-center justify-between">
+              <span>⏱️ 60 minutes</span>
+              <span>📊 32 Questions</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-8 p-5 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-800/30">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">⭐</span>
+            <div>
+              <p class="text-sm font-medium text-amber-700 dark:text-amber-400">Negative Marking: No negative marking for Foundation Round</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Advanced Round: Coding questions have partial marking</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wipro Tab -->
+    <div id="wipro" class="tab-content">
+      <div class="glass rounded-[40px] p-8 md:p-12 border border-white/40">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-2xl">💻</div>
+              <h2 class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">Wipro Elite NTH</h2>
+            </div>
+            <p class="text-sm font-bold text-indigo-500 uppercase tracking-widest mt-1">National Talent Hunt</p>
+          </div>
+          <span class="text-[10px] font-bold px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-100 dark:border-indigo-800/30 uppercase">128 Minutes Total</span>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="pattern-card p-6 bg-gradient-to-br from-indigo-50 to-indigo-100/30 dark:from-indigo-900/20 dark:to-indigo-900/10 rounded-3xl border border-indigo-100 dark:border-indigo-800/30 hover:shadow-xl transition-all">
+            <div class="text-3xl mb-4">📈</div>
+            <h3 class="font-bold text-lg mb-2">Aptitude</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">48 Qs · 48 Min</p>
+            <div class="mt-3 flex flex-wrap gap-1">
+              <span class="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 rounded-full">Quantitative</span>
+              <span class="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 rounded-full">Logical</span>
+              <span class="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 rounded-full">Verbal</span>
+            </div>
+          </div>
+          <div class="pattern-card p-6 bg-gradient-to-br from-purple-50 to-purple-100/30 dark:from-purple-900/20 dark:to-purple-900/10 rounded-3xl border border-purple-100 dark:border-purple-800/30 hover:shadow-xl transition-all">
+            <div class="text-3xl mb-4">✍️</div>
+            <h3 class="font-bold text-lg mb-2">Communication</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">1 Essay · 20 Min</p>
+            <div class="mt-3 flex flex-wrap gap-1">
+              <span class="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 rounded-full">Business Writing</span>
+            </div>
+          </div>
+          <div class="pattern-card p-6 bg-gradient-to-br from-emerald-50 to-emerald-100/30 dark:from-emerald-900/20 dark:to-emerald-900/10 rounded-3xl border border-emerald-100 dark:border-emerald-800/30 hover:shadow-xl transition-all">
+            <div class="text-3xl mb-4">💻</div>
+            <h3 class="font-bold text-lg mb-2">Coding</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">2 Problems · 60 Min</p>
+            <div class="mt-3 flex flex-wrap gap-1">
+              <span class="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 rounded-full">DSA</span>
+              <span class="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 rounded-full">Problem Solving</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 p-4 bg-slate-50 dark:bg-slate-800/30 rounded-xl text-center">
+          <p class="text-xs text-slate-500 dark:text-slate-400">🔄 Adaptive difficulty based on previous round performance</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Infosys Tab -->
+    <div id="infosys" class="tab-content">
+      <div class="glass rounded-[40px] p-8 md:p-12 border border-white/40">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-12 h-12 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center text-2xl">🌐</div>
+              <h2 class="text-3xl font-extrabold text-cyan-600 dark:text-cyan-400">Infosys SP/DSE</h2>
+            </div>
+            <p class="text-sm font-bold text-cyan-500 uppercase tracking-widest mt-1">Specialist Programmer / DSE</p>
+          </div>
+          <span class="text-[10px] font-bold px-4 py-1.5 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-full border border-cyan-100 dark:border-cyan-800/30">Premium Role</span>
+        </div>
+        <div class="p-8 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/10 dark:to-blue-900/10 rounded-[32px] border border-cyan-100 dark:border-cyan-800/30 text-center">
+          <span class="text-5xl mb-4 block animate-pulse-slow">🧠</span>
+          <h3 class="text-xl font-bold mb-4 text-cyan-700 dark:text-cyan-300">Hands-on Coding Assessment</h3>
+          <p class="text-slate-600 dark:text-slate-400 max-w-lg mx-auto font-medium mb-6">No Aptitude or English rounds for premium roles. Pure technical evaluation.</p>
+          <div class="flex flex-wrap justify-center gap-3 text-xs font-bold uppercase tracking-tighter">
+            <span class="px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-cyan-200 dark:border-cyan-800">Data Structures</span>
+            <span class="px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-cyan-200 dark:border-cyan-800">Algorithms</span>
+            <span class="px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-cyan-200 dark:border-cyan-800">System Design (DSE)</span>
+            <span class="px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-cyan-200 dark:border-cyan-800">DBMS</span>
+            <span class="px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-cyan-200 dark:border-cyan-800">OOPs</span>
+          </div>
+          <div class="mt-6 p-4 bg-cyan-50 dark:bg-cyan-900/20 rounded-xl">
+            <p class="text-sm font-medium text-cyan-700 dark:text-cyan-300">📊 3 Coding Questions | 90-120 minutes | No Negative Marking</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accenture Tab -->
+    <div id="accenture" class="tab-content">
+      <div class="glass rounded-[40px] p-8 md:p-12 border border-white/40">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-2xl">⚡</div>
+              <h2 class="text-3xl font-extrabold text-purple-600 dark:text-purple-400">Accenture ASE</h2>
+            </div>
+            <p class="text-sm font-bold text-purple-500 uppercase tracking-widest mt-1">Associate Software Engineer</p>
+          </div>
+          <span class="text-[10px] font-bold px-4 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full border border-purple-100 dark:border-purple-800/30 uppercase tracking-widest">Multi-Stage Elimination</span>
+        </div>
+        <div class="space-y-4">
+          <div class="flex items-center gap-6 p-6 bg-white/50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all">
+            <div class="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xl">1</div>
+            <div class="flex-1">
+              <h3 class="font-bold text-lg">Cognitive & Technical Assessment</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">90 Minutes · Critical for Stage 2 unlock</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                <span class="text-[10px] px-2 py-0.5 bg-purple-50 dark:bg-purple-900/20 rounded-full">Numerical</span>
+                <span class="text-[10px] px-2 py-0.5 bg-purple-50 dark:bg-purple-900/20 rounded-full">Reasoning</span>
+                <span class="text-[10px] px-2 py-0.5 bg-purple-50 dark:bg-purple-900/20 rounded-full">Technical MCQs</span>
+                <span class="text-[10px] px-2 py-0.5 bg-purple-50 dark:bg-purple-900/20 rounded-full">MS Office</span>
+                <span class="text-[10px] px-2 py-0.5 bg-purple-50 dark:bg-purple-900/20 rounded-full">Pseudo Code</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 p-6 bg-white/50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl">2</div>
+            <div class="flex-1">
+              <h3 class="font-bold text-lg">Coding Assessment</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">2 Questions · 45 Minutes</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                <span class="text-[10px] px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-full">Arrays</span>
+                <span class="text-[10px] px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-full">Strings</span>
+                <span class="text-[10px] px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-full">Recursion</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 p-6 bg-white/50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all">
+            <div class="w-12 h-12 rounded-2xl bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 flex items-center justify-center font-bold text-xl">3</div>
+            <div class="flex-1">
+              <h3 class="font-bold text-lg">Communication Assessment</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Automated Speaking & Listening Test</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                <span class="text-[10px] px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 rounded-full">Pronunciation</span>
+                <span class="text-[10px] px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 rounded-full">Fluency</span>
+                <span class="text-[10px] px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 rounded-full">Listening</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30">
+          <p class="text-xs text-amber-700 dark:text-amber-400 text-center">⚠️ Stage 2 (Coding) unlocks only if Stage 1 is cleared. Each stage is elimination-based.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-3xl border border-blue-100 dark:border-blue-800/30">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">💡</span>
+        <h3 class="font-bold text-lg">Quick Preparation Tips</h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div class="flex items-start gap-2">
+          <span class="text-blue-500">✓</span>
+          <span class="text-slate-600 dark:text-slate-400">Start with sectional tests before attempting full mocks</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-blue-500">✓</span>
+          <span class="text-slate-600 dark:text-slate-400">Time management is key - practice with timers</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-blue-500">✓</span>
+          <span class="text-slate-600 dark:text-slate-400">Review incorrect answers to understand mistakes</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full border-t border-slate-200/60 dark:border-slate-800 py-8 text-center text-slate-400 text-xs font-bold tracking-widest uppercase">
+    <p>© 2026 aptitude portal · batch of 2026 verified patterns</p>
+  </footer>
+
+  <script>
+    function showTab(companyId, btn, color) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(companyId).classList.add('active');
+      
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = "tab-btn px-6 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-white dark:hover:bg-slate-800 transition-all flex items-center gap-2";
+        b.style.backgroundColor = "";
+        b.style.color = "";
+        b.style.boxShadow = "none";
+      });
+
+      btn.className = "tab-btn px-6 py-3 rounded-2xl text-sm font-bold text-white shadow-xl transition-all flex items-center gap-2";
+      btn.style.backgroundColor = color;
+      btn.style.boxShadow = `0 15px 25px -5px ${color}44`;
+    }
+
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+</body>
+</html>

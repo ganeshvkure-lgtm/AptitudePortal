@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>student · aptitude portal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            deep: { 950: '#0B0B12', 900: '#13131C', 800: '#1E1E2A' }
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) forwards',
+            'blob': 'blob 10s ease-in-out infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            blob: {
+              '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+              '33%': { transform: 'translate(30px, -40px) scale(1.05)' },
+              '66%': { transform: 'translate(-20px, 20px) scale(0.95)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .bg-grid-pattern {
+      background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .dark body {
+      background-color: #0B0B12;
+    }
+
+    .card-glass {
+      background-color: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .dark .card-glass {
+      background-color: rgba(22, 22, 31, 0.7);
+      border-color: rgba(42, 42, 55, 0.8);
+    }
+
+    .nav-glass {
+      background-color: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .dark .nav-glass {
+      background-color: rgba(22, 22, 31, 0.8);
+      border-color: rgba(42, 42, 55, 0.8);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    .toggle-slider {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .shake {
+      animation: shake 0.3s ease-in-out;
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      max-width: 400px;
+      width: 90%;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyqS7iZujmdJ-Vwg5yrRfS24yW-VzG540",
+      authDomain: "placement-portal-465c2.firebaseapp.com",
+      projectId: "placement-portal-465c2",
+      storageBucket: "placement-portal-465c2.firebasestorage.app",
+      messagingSenderId: "60536248254",
+      appId: "1:60536248254:web:2b4fe5996029c4712e0bef",
+      measurementId: "G-F1T6X08PZ7"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+  </script>
+</head>
+
+<body class="bg-slate-50 dark:bg-deep-950 text-slate-900 dark:text-slate-200 min-h-screen flex flex-col font-sans antialiased transition-colors duration-300 relative overflow-x-hidden">
+
+  <div class="absolute inset-0 z-[-1] bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:linear-gradient(to_bottom,black,transparent)] pointer-events-none"></div>
+  <div class="blob fixed top-20 -left-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-[120px] z-[-1] animate-float"></div>
+  <div class="blob fixed bottom-20 -right-20 w-96 h-96 bg-indigo-200/30 dark:bg-indigo-800/20 rounded-full blur-[140px] z-[-1] animate-float" style="animation-delay: -5s;"></div>
+
+  <nav class="sticky top-4 z-50 max-w-7xl mx-auto w-[calc(100%-2.5rem)] px-5 py-3 rounded-2xl nav-glass shadow-sm">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+        <span class="text-xl font-semibold tracking-tight">
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">aptitude</span>
+          <span class="text-slate-500 dark:text-slate-500 font-light mx-1">/</span>
+          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">student</span>
+        </span>
+      </div>
+      <button onclick="window.location.href='admin-login.html'" 
+        class="px-4 py-2 rounded-full bg-white dark:bg-deep-800 border border-slate-200 dark:border-[#353542] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-deep-700 text-sm font-medium shadow-sm transition-all flex items-center gap-1 active:scale-95">
+        <span>🛡️</span> admin
+      </button>
+    </div>
+  </nav>
+
+  <main class="flex-grow flex items-center justify-center p-4 md:p-8">
+    
+    <div class="w-full max-w-md animate-fade-up opacity-0" style="animation-fill-mode: forwards;">
+      
+      <div class="card-glass rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden p-8 sm:p-9">
+        
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-indigo-500"></div>
+
+        <div class="text-center mb-7">
+          <div class="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg">
+            🎓
+          </div>
+          <h2 id="formTitle" class="text-2xl font-medium tracking-tight mb-1">welcome back</h2>
+          <p id="formSubtitle" class="text-xs text-slate-500 dark:text-[#8A8A9E]">
+            log in to continue your preparation
+          </p>
+        </div>
+
+        <div id="errorBox" class="hidden mb-5 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 px-4 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2">
+          <span class="text-base">⚠️</span>
+          <span id="errorText">Invalid credentials</span>
+        </div>
+
+        <div id="successBox" class="hidden mb-5 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900/30 text-green-600 dark:text-green-400 px-4 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2">
+          <span class="text-base">✅</span>
+          <span id="successText">Success!</span>
+        </div>
+
+        <div class="relative flex bg-slate-200/70 dark:bg-deep-800/70 rounded-full p-1 mb-7 shadow-inner border border-slate-300/50 dark:border-deep-700/50">
+          <div id="slider" class="absolute top-1 left-1 w-[calc(50%-4px)] h-[calc(100%-8px)] bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full transition-transform duration-300 ease-out z-0 toggle-slider"></div>
+          
+          <button id="loginToggle" onclick="switchForm('login')" type="button" class="relative z-10 flex-1 text-center py-2 text-sm font-medium text-white transition-colors duration-300">
+            login
+          </button>
+          <button id="registerToggle" onclick="switchForm('register')" type="button" class="relative z-10 flex-1 text-center py-2 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors duration-300">
+            sign up
+          </button>
+        </div>
+
+        <form id="studentForm" onsubmit="handleAuth(event)" class="space-y-5">
+          
+          <div id="registerFields" class="hidden space-y-5 transition-all">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide">
+                FULL NAME
+              </label>
+              <input type="text" id="fullName" placeholder="e.g. Alex Morgan" autocomplete="name"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-deep-800 bg-white dark:bg-deep-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-400 dark:focus:border-blue-600 transition-all duration-200 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide">
+                EMAIL ADDRESS <span class="text-red-500">*</span>
+              </label>
+              <input type="email" id="emailAddress" placeholder="youremail@example.com" autocomplete="email"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-deep-800 bg-white dark:bg-deep-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-400 dark:focus:border-blue-600 transition-all duration-200 text-sm">
+              <p class="text-[10px] text-slate-400 mt-1">Required for password reset</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide">
+              USERNAME
+            </label>
+            <input type="text" id="username" placeholder="your username" autocomplete="username" required
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-deep-800 bg-white dark:bg-deep-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-400 dark:focus:border-blue-600 transition-all duration-200 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide">
+              PASSWORD
+            </label>
+            <input type="password" id="password" placeholder="········" autocomplete="current-password" required
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-deep-800 bg-white dark:bg-deep-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-400 dark:focus:border-blue-600 transition-all duration-200 text-sm">
+          </div>
+
+          <div id="forgotPasswordLink" class="text-right">
+            <button type="button" onclick="openForgotPasswordModal()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+              Forgot password?
+            </button>
+          </div>
+
+          <button type="submit" id="submitBtn" 
+            class="w-full mt-3 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 text-sm group">
+            <span id="submitBtnText">log in</span> <span class="text-lg group-hover:translate-x-1 transition">→</span>
+          </button>
+        </form>
+
+        <p class="text-center text-xs text-slate-400 dark:text-[#6B6B80] mt-6">
+          · student access only ·
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgotPasswordModal" class="modal-overlay" onclick="if(event.target === this) closeForgotPasswordModal()">
+    <div class="modal-content bg-white/90 dark:bg-[#16161F]/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-slate-200 dark:border-[#2A2A37]">
+      <div class="text-center mb-5">
+        <div class="w-14 h-14 mx-auto bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-2xl mb-3">
+          🔐
+        </div>
+        <h3 class="text-xl font-semibold">Reset Password</h3>
+        <p class="text-xs text-slate-500 mt-1">Enter your registered email address</p>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">EMAIL ADDRESS</label>
+          <input type="email" id="resetEmail" placeholder="youremail@example.com" 
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-deep-800 bg-white dark:bg-deep-800 text-slate-900 dark:text-white focus:border-blue-400 transition-all text-sm">
+        </div>
+        
+        <div id="resetError" class="hidden text-red-500 text-xs text-center"></div>
+        <div id="resetSuccess" class="hidden text-green-500 text-xs text-center"></div>
+        
+        <div class="flex gap-3 pt-2">
+          <button onclick="closeForgotPasswordModal()" class="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+            Cancel
+          </button>
+          <button onclick="sendPasswordReset()" id="resetBtn" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium hover:from-blue-700 hover:to-indigo-700 transition-all">
+            Send Reset Email
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="w-full border-t border-slate-200/60 dark:border-deep-800/80 py-5 text-center text-slate-400 dark:text-[#6B6B80] text-xs">
+    <p>© 2026 aptitude portal · student interface</p>
+  </footer>
+
+  <script>
+    let isLoginMode = true;
+    // Store email mapping for users (since we use username@portal.com for auth)
+    // In a real app, you'd store this in Firestore. This is a simple in-memory fallback.
+    let userEmailMap = JSON.parse(localStorage.getItem('userEmailMap') || '{}');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    });
+
+    function switchForm(mode) {
+      const slider = document.getElementById('slider');
+      const loginToggle = document.getElementById('loginToggle');
+      const registerToggle = document.getElementById('registerToggle');
+      const registerFields = document.getElementById('registerFields');
+      const formTitle = document.getElementById('formTitle');
+      const formSubtitle = document.getElementById('formSubtitle');
+      const submitBtnText = document.getElementById('submitBtnText');
+      const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+      const errorBox = document.getElementById('errorBox');
+      const fullNameInput = document.getElementById('fullName');
+
+      errorBox.classList.add('hidden');
+
+      if (mode === 'register') {
+        isLoginMode = false;
+        slider.classList.add('translate-x-full');
+        loginToggle.classList.replace('text-white', 'text-slate-600');
+        loginToggle.classList.add('dark:text-slate-400');
+        registerToggle.classList.remove('text-slate-600', 'dark:text-slate-400');
+        registerToggle.classList.add('text-white');
+        registerFields.classList.remove('hidden');
+        forgotPasswordLink.classList.add('hidden');
+        fullNameInput.setAttribute('required', 'true');
+        document.getElementById('emailAddress').setAttribute('required', 'true');
+        formTitle.innerText = 'create account';
+        formSubtitle.innerText = 'start your journey today';
+        submitBtnText.innerText = 'sign up';
+      } else {
+        isLoginMode = true;
+        slider.classList.remove('translate-x-full');
+        registerToggle.classList.replace('text-white', 'text-slate-600');
+        registerToggle.classList.add('dark:text-slate-400');
+        loginToggle.classList.remove('text-slate-600', 'dark:text-slate-400');
+        loginToggle.classList.add('text-white');
+        registerFields.classList.add('hidden');
+        forgotPasswordLink.classList.remove('hidden');
+        fullNameInput.removeAttribute('required');
+        document.getElementById('emailAddress').removeAttribute('required');
+        formTitle.innerText = 'welcome back';
+        formSubtitle.innerText = 'log in to continue your preparation';
+        submitBtnText.innerText = 'log in';
+      }
+    }
+
+    function showError(msg) {
+      const errorBox = document.getElementById('errorBox');
+      const errorText = document.getElementById('errorText');
+      errorText.innerText = msg;
+      errorBox.classList.remove('hidden');
+      errorBox.classList.add('shake');
+      setTimeout(() => errorBox.classList.remove('shake'), 300);
+      setTimeout(() => {
+        if (errorBox.classList.contains('hidden')) return;
+        errorBox.classList.add('hidden');
+      }, 5000);
+    }
+
+    function showSuccess(msg) {
+      const successBox = document.getElementById('successBox');
+      const successText = document.getElementById('successText');
+      successText.innerText = msg;
+      successBox.classList.remove('hidden');
+      setTimeout(() => {
+        successBox.classList.add('hidden');
+      }, 5000);
+    }
+
+    function openForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.add('active');
+      document.getElementById('resetEmail').value = '';
+      document.getElementById('resetError').classList.add('hidden');
+      document.getElementById('resetSuccess').classList.add('hidden');
+    }
+
+    function closeForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.remove('active');
+    }
+
+    async function sendPasswordReset() {
+      const email = document.getElementById('resetEmail').value.trim();
+      const resetBtn = document.getElementById('resetBtn');
+      const resetError = document.getElementById('resetError');
+      const resetSuccess = document.getElementById('resetSuccess');
+      
+      if (!email) {
+        resetError.innerText = 'Please enter your email address';
+        resetError.classList.remove('hidden');
+        return;
+      }
+      
+      if (!email.includes('@') || !email.includes('.')) {
+        resetError.innerText = 'Please enter a valid email address';
+        resetError.classList.remove('hidden');
+        return;
+      }
+      
+      resetBtn.disabled = true;
+      resetBtn.innerText = "Sending...";
+      resetError.classList.add('hidden');
+      resetSuccess.classList.add('hidden');
+      
+      try {
+        await auth.sendPasswordResetEmail(email);
+        resetSuccess.innerText = `✅ Password reset email sent to ${email}! Check your inbox.`;
+        resetSuccess.classList.remove('hidden');
+        
+        document.getElementById('resetEmail').value = '';
+        
+        setTimeout(() => {
+          closeForgotPasswordModal();
+        }, 3000);
+        
+      } catch (error) {
+        console.error("Reset error:", error);
+        let errorMsg = "Unable to send reset email. ";
+        if (error.code === 'auth/user-not-found') {
+          errorMsg = "❌ No account found with this email address. Please check or sign up.";
+        } else if (error.code === 'auth/invalid-email') {
+          errorMsg = "❌ Invalid email address format.";
+        } else {
+          errorMsg = "❌ " + error.message;
+        }
+        resetError.innerText = errorMsg;
+        resetError.classList.remove('hidden');
+      } finally {
+        resetBtn.disabled = false;
+        resetBtn.innerText = "Send Reset Email";
+      }
+    }
+
+    function handleAuth(e) {
+      e.preventDefault();
+
+      const userField = document.getElementById('username');
+      const passField = document.getElementById('password');
+      const user = userField.value.trim();
+      const pass = passField.value;
+      const btn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('submitBtnText');
+
+      if (!user || !pass) {
+        showError("Please fill in all fields");
+        return;
+      }
+
+      if (isLoginMode) {
+        // For login, we need to find the email associated with this username
+        // Since we stored it during signup, we can retrieve it from localStorage
+        const savedEmail = userEmailMap[user];
+        
+        if (!savedEmail) {
+          // Fallback: try username@portal.com for existing users
+          const fallbackEmail = user + "@portal.com";
+          console.log("No saved email found, trying fallback:", fallbackEmail);
+          
+          auth.signInWithEmailAndPassword(fallbackEmail, pass)
+            .then((userCredential) => {
+              localStorage.setItem('userLoginID', user);
+              localStorage.setItem('username', userCredential.user.displayName || user);
+              btnText.innerText = "success →";
+              btn.classList.add('bg-emerald-600');
+              setTimeout(() => { window.location.href = 'index.html'; }, 500);
+            })
+            .catch((error) => {
+              btn.disabled = false;
+              btnText.innerText = "log in";
+              let errorMsg = "Login failed. ";
+              if (error.code === 'auth/user-not-found') {
+                errorMsg = "User not found. Please sign up first.";
+              } else if (error.code === 'auth/wrong-password') {
+                errorMsg = "Incorrect password. Please try again or click 'Forgot Password'.";
+              } else {
+                errorMsg = error.message;
+              }
+              showError(errorMsg);
+              passField.value = '';
+            });
+          return;
+        }
+        
+        // Login with the saved email
+        auth.signInWithEmailAndPassword(savedEmail, pass)
+          .then((userCredential) => {
+            localStorage.setItem('userLoginID', user);
+            localStorage.setItem('username', userCredential.user.displayName || user);
+            btnText.innerText = "success →";
+            btn.classList.add('bg-emerald-600');
+            setTimeout(() => { window.location.href = 'index.html'; }, 500);
+          })
+          .catch((error) => {
+            btn.disabled = false;
+            btnText.innerText = "log in";
+            let errorMsg = "Login failed. ";
+            if (error.code === 'auth/user-not-found') {
+              errorMsg = "User not found. Please sign up first.";
+            } else if (error.code === 'auth/wrong-password') {
+              errorMsg = "Incorrect password. Please try again or click 'Forgot Password'.";
+            } else {
+              errorMsg = error.message;
+            }
+            showError(errorMsg);
+            passField.value = '';
+          });
+      } else {
+        // SIGN UP
+        const fullName = document.getElementById('fullName').value.trim();
+        const emailAddress = document.getElementById('emailAddress').value.trim();
+        
+        if (!fullName) {
+          showError("Please enter your full name");
+          btn.disabled = false;
+          btnText.innerText = "sign up";
+          return;
+        }
+        
+        if (!emailAddress) {
+          showError("Please enter your email address (required for password reset)");
+          btn.disabled = false;
+          btnText.innerText = "sign up";
+          return;
+        }
+        
+        // Use the real email for Firebase auth
+        auth.createUserWithEmailAndPassword(emailAddress, pass)
+          .then((userCredential) => {
+            return userCredential.user.updateProfile({ displayName: fullName });
+          })
+          .then(() => {
+            // Store the email mapping for this username
+            userEmailMap[user] = emailAddress;
+            localStorage.setItem('userEmailMap', JSON.stringify(userEmailMap));
+            
+            localStorage.setItem('userLoginID', user);
+            localStorage.setItem('username', fullName);
+            btnText.innerText = "created →";
+            btn.classList.add('bg-emerald-600');
+            setTimeout(() => { window.location.href = 'index.html'; }, 500);
+          })
+          .catch((error) => {
+            btn.disabled = false;
+            btnText.innerText = "sign up";
+            let errorMsg = "Sign up failed. ";
+            if (error.code === 'auth/email-already-in-use') {
+              errorMsg = "Email already registered. Please use a different email or login.";
+            } else if (error.code === 'auth/weak-password') {
+              errorMsg = "Password should be at least 6 characters.";
+            } else {
+              errorMsg = error.message;
+            }
+            showError(errorMsg);
+          });
+      }
+    }
+  </script>
+</body>
+</html>

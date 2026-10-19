@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>aptitude · practice portal</title>
+
+    <script>
+      (function () {
+        if (!localStorage.getItem("username")) {
+          window.location.href = "login.html";
+        }
+      })();
+    </script>
+
+    <!-- Firebase SDKs - MUST be loaded before using -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+    <script>
+      // Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAyqS7iZujmdJ-Vwg5yrRfS24yW-VzG540",
+        authDomain: "placement-portal-465c2.firebaseapp.com",
+        projectId: "placement-portal-465c2",
+        storageBucket: "placement-portal-465c2.firebasestorage.app",
+        messagingSenderId: "60536248254",
+        appId: "1:60536248254:web:2b4fe5996029c4712e0bef",
+        measurementId: "G-F1T6X08PZ7"
+      };
+      
+      // Initialize Firebase
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      const db = firebase.firestore();
+      
+      // Sample fallback data if Firebase is empty
+      const SAMPLE_TESTS = [
+        { id: "sample_tcs_num", company: "TCS", section: "Numerical Ability", title: "TCS Numerical Ability Practice", time: 30, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_tcs_logical", company: "TCS", section: "Logical Reasoning", title: "TCS Logical Reasoning Practice", time: 30, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_tcs_verbal", company: "TCS", section: "Verbal Ability", title: "TCS Verbal Ability Practice", time: 30, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_wipro_quant", company: "Wipro", section: "Quantitative Ability", title: "Wipro Quantitative Practice", time: 30, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_wipro_logical", company: "Wipro", section: "Logical Ability", title: "Wipro Logical Practice", time: 30, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_infosys_easy", company: "Infosys", section: "Easy", title: "Infosys Easy Coding Problems", time: 30, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_infosys_medium", company: "Infosys", section: "Medium", title: "Infosys Medium Coding Problems", time: 45, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_accenture_cognitive", company: "Accenture", section: "Cognitive", title: "Accenture Cognitive Assessment", time: 30, type: "sectional", createdAt: new Date().toISOString() },
+        { id: "sample_accenture_technical", company: "Accenture", section: "Technical", title: "Accenture Technical Assessment", time: 30, type: "sectional", createdAt: new Date().toISOString() }
+      ];
+      
+      const SAMPLE_QUESTIONS = [
+        { id: "q1", testId: "sample_tcs_num", text: "If a shopkeeper sells an item at 20% profit, and the cost price is Rs. 500, what is the selling price?", options: ["Rs. 550", "Rs. 600", "Rs. 620", "Rs. 650"], correct: 1, subject: "Numerical Ability", level: "Easy" },
+        { id: "q2", testId: "sample_tcs_num", text: "What is 15% of 200?", options: ["20", "25", "30", "35"], correct: 2, subject: "Numerical Ability", level: "Easy" },
+        { id: "q3", testId: "sample_tcs_logical", text: "If all Bloops are Razzies and all Razzies are Lazzies, then all Bloops are definitely Lazzies. This is:", options: ["True", "False", "Uncertain", "Cannot be determined"], correct: 0, subject: "Logical Reasoning", level: "Easy" },
+        { id: "q4", testId: "sample_wipro_quant", text: "The average of 5 numbers is 20. If one number is removed, the average becomes 18. What is the removed number?", options: ["20", "25", "28", "30"], correct: 2, subject: "Quantitative Ability", level: "Medium" },
+        { id: "q5", testId: "sample_infosys_easy", text: "What is the output of: console.log(typeof null)", options: ["null", "object", "undefined", "number"], correct: 1, subject: "Easy", level: "Easy" }
+      ];
+      
+      // Function to initialize sample data if needed
+      async function initSampleData() {
+        try {
+          // Check if tests collection is empty
+          const testsSnap = await db.collection("tests").limit(1).get();
+          if (testsSnap.empty) {
+            console.log("No tests found, adding sample data...");
+            // Add sample tests
+            for (const test of SAMPLE_TESTS) {
+              const { id, ...testData } = test;
+              await db.collection("tests").doc(id).set(testData);
+            }
+            // Add sample questions
+            for (const q of SAMPLE_QUESTIONS) {
+              const { id, ...qData } = q;
+              await db.collection("questions").doc(id).set(qData);
+            }
+            console.log("Sample data added successfully!");
+          }
+        } catch (e) {
+          console.error("Error initializing sample data:", e);
+        }
+      }
+      
+      // Call init on load
+      window.initFirestore = initSampleData;
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Inter", "sans-serif"] },
+            colors: {
+              soft: { 50: "#f8fafc", 100: "#f1f5f9" },
+              tcs: "#2563eb",
+              wipro: "#4f46e5",
+              infosys: "#0891b2",
+              accenture: "#9333ea",
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+              "pulse-subtle": "pulse-subtle 4s ease-in-out infinite",
+              "gradient": "gradient 3s ease infinite",
+            },
+            keyframes: {
+              float: {
+                "0%,100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              "pulse-subtle": {
+                "0%,100%": { opacity: 0.6 },
+                "50%": { opacity: 0.3 },
+              },
+              gradient: {
+                "0%,100%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .fade-up {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
+      }
+      .fade-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .noise-bg {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4wMjUiIC8+PC9zdmc+");
+        background-repeat: repeat;
+        pointer-events: none;
+      }
+      
+      *:focus-visible {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+      }
+
+      .company-card {
+        transition: all 0.3s ease;
+      }
+      .company-card:hover {
+        transform: translateY(-8px);
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+        background-size: 200% 200%;
+        animation: gradient 3s ease infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .welcome-banner {
+        background: linear-gradient(135deg, #2563eb10, #8b5cf610, #ec489910);
+        background-size: 200% 200%;
+        animation: gradient 5s ease infinite;
+      }
+      
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      .dark ::-webkit-scrollbar-track {
+        background: #1e1e2a;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #334155;
+      }
+    </style>
+  </head>
+  <body class="bg-soft-50 dark:bg-[#0B0B12] text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col transition-colors duration-300 relative">
+    
+    <div class="noise-bg fixed inset-0 z-[-2] opacity-40 dark:opacity-20"></div>
+    <div class="fixed top-20 -left-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-900/20 rounded-full blur-[120px] z-[-1] animate-pulse-subtle"></div>
+    <div class="fixed bottom-20 -right-20 w-96 h-96 bg-indigo-200/30 dark:bg-indigo-900/20 rounded-full blur-[140px] z-[-1] animate-float"></div>
+    <div class="fixed top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-purple-200/30 dark:bg-purple-900/20 rounded-full blur-[140px] z-[-1] animate-pulse-subtle"></div>
+
+    <nav class="sticky top-4 z-50 max-w-7xl mx-auto w-[calc(100%-2.5rem)] px-5 py-3 rounded-2xl bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-xl border border-white/30 dark:border-[#2A2A37]/80 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div onclick="window.scrollTo(0, 0)" class="text-xl font-semibold tracking-tight cursor-pointer select-none">
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">aptitude</span>
+          <span class="text-slate-500 dark:text-slate-400 font-light">/</span>
+          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">portal</span>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3 text-sm">
+          <a href="syllabus.html" class="hidden sm:flex items-center gap-1 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#262633]">📖 syllabus</a>
+          <a href="full-mocks.html" class="hidden sm:flex items-center gap-1 text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#262633]">📋 full mocks</a>
+          <a href="leaderboard.html" class="hidden sm:flex items-center gap-1 text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#262633]">🏆 leaderboard</a>
+
+          <div class="flex items-center gap-1 text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-[#1E1E2A] px-3 py-1.5 rounded-full border border-slate-200/60 dark:border-[#2A2A37]/80">
+            <span class="text-xs">👋</span>
+            <span id="usernameDisplay" class="font-medium text-slate-700 dark:text-slate-200 max-w-[100px] truncate">Guest</span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button id="themeBtn" onclick="toggleDarkMode()" class="w-9 h-9 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-lg flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#262633] transition-all hover:scale-105 active:scale-95 shadow-sm" title="theme">🌙</button>
+            <button onclick="window.location.href = 'leaderboard.html'" class="w-9 h-9 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-base flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#262633] transition-all hover:scale-105 active:scale-95 shadow-sm sm:hidden" title="leaderboard">🏆</button>
+            <button onclick="window.location.href = 'admin-login.html'" class="w-9 h-9 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-base flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#262633] transition-all hover:scale-105 active:scale-95 shadow-sm" title="admin">🛡️</button>
+            <button onclick="logout()" class="px-4 h-9 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all hover:scale-105 active:scale-95 shadow-sm flex items-center gap-1">
+              🚪<span class="hidden xs:inline">logout</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto w-full px-5 sm:px-6 mt-6">
+      <div class="welcome-banner rounded-2xl p-4 border border-blue-200/30 dark:border-blue-800/30 flex items-center justify-between backdrop-blur-sm">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🎉</span>
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Welcome back, <span id="welcomeName" class="font-semibold text-blue-600 dark:text-blue-400">Student</span>!
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center gap-1">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+            Ready to practice
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-5 sm:px-6 flex flex-col items-center">
+      <section class="text-center py-16 md:py-20 w-full max-w-4xl">
+        <div class="fade-up">
+          <span class="text-xs uppercase tracking-[0.3em] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-[#1E1E2A] px-4 py-2 rounded-full inline-block mb-6 border border-blue-100 dark:border-[#353542]">company‑wise aptitude</span>
+        </div>
+        <h1 class="fade-up text-5xl md:text-7xl font-medium tracking-tight leading-[1.1] text-balance">
+          crack your
+          <span class="font-semibold gradient-text bg-[length:200%]">dream company</span>
+        </h1>
+        <p class="fade-up text-lg md:text-xl text-slate-500 dark:text-[#B0B0C0] mt-6 max-w-2xl mx-auto leading-relaxed">
+          curated quizzes · real placement questions · timed mocks — for TCS, Wipro, Infosys, Accenture.
+        </p>
+        
+        <div class="fade-up flex flex-col sm:flex-row justify-center gap-4 mt-8">
+          <button onclick="scrollToCompanies()" class="group px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow-md shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+            start practicing <span class="inline-block group-hover:translate-x-1 transition">🚀</span>
+          </button>
+          
+          <button onclick="window.location.href = 'mockai.html'" class="group flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium shadow-md shadow-purple-500/20 hover:shadow-xl hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+            <span class="group-hover:animate-pulse">⚡</span> practice with AI
+          </button>
+
+          <button onclick="window.location.href = 'leaderboard.html'" class="group flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600 to-orange-600 text-white font-medium shadow-md shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+            <span class="text-lg">🏆</span> view leaderboard
+          </button>
+
+          <button onclick="window.location.href = 'syllabus.html'" class="px-8 py-4 rounded-full bg-white dark:bg-[#16161F] border border-slate-200 dark:border-[#2A2A37] text-slate-700 dark:text-slate-300 font-medium hover:border-slate-300 dark:hover:border-[#40404F] hover:bg-slate-50 dark:hover:bg-[#1F1F2B] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-sm">
+            📋 view syllabus
+          </button>
+        </div>
+        
+        <div class="fade-up flex flex-wrap justify-center gap-3 mt-12">
+          <span class="px-5 py-2.5 bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-full text-sm font-medium shadow-xs flex items-center gap-2">
+            <span class="text-blue-600">📚</span> 100+ questions
+          </span>
+          <span class="px-5 py-2.5 bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-full text-sm font-medium shadow-xs flex items-center gap-2">
+            <span class="text-indigo-600">🏢</span> 4 top MNCs
+          </span>
+          <span class="px-5 py-2.5 bg-white/70 dark:bg-[#16161F]/80 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-full text-sm font-medium shadow-xs flex items-center gap-2">
+            <span class="text-purple-600">📋</span> full mock tests
+          </span>
+        </div>
+      </section>
+
+      <section id="companies" class="w-full py-10 scroll-mt-28">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="h-px flex-1 bg-gradient-to-r from-transparent to-blue-200 dark:to-blue-900/30"></div>
+          <h3 class="text-xl font-medium text-slate-600 dark:text-slate-400 flex items-center gap-3 px-4">
+            <span class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">📚</span>
+            Company Wise Practice
+          </h3>
+          <div class="h-px flex-1 bg-gradient-to-l from-transparent to-blue-200 dark:to-blue-900/30"></div>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-500 text-center mb-8">Choose a company to start practicing sectional tests</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div onclick="openCompany('tcs.html')" class="company-card group cursor-pointer bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-3xl p-6 text-center hover:bg-white dark:hover:bg-[#1C1C28] hover:border-blue-300 dark:hover:border-blue-700/80 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top rounded-l-full"></div>
+            <div class="text-4xl mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">🏢</div>
+            <h3 class="text-lg font-medium mb-1">TCS NQT</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">numerical · verbal · reasoning</p>
+            <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">Explore Tests →</div>
+          </div>
+          <div onclick="openCompany('wipro.html')" class="company-card group cursor-pointer bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-3xl p-6 text-center hover:bg-white dark:hover:bg-[#1C1C28] hover:border-indigo-300 dark:hover:border-indigo-700/80 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top rounded-l-full"></div>
+            <div class="text-4xl mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">💻</div>
+            <h3 class="text-lg font-medium mb-1">Wipro Elite</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">coding · analytical · english</p>
+            <div class="mt-3 text-xs text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">Explore Tests →</div>
+          </div>
+          <div onclick="openCompany('infosys.html')" class="company-card group cursor-pointer bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-3xl p-6 text-center hover:bg-white dark:hover:bg-[#1C1C28] hover:border-cyan-300 dark:hover:border-cyan-700/80 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-cyan-500 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top rounded-l-full"></div>
+            <div class="text-4xl mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">🌐</div>
+            <h3 class="text-lg font-medium mb-1">Infosys SP/DSE</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">coding · algorithms · dsa</p>
+            <div class="mt-3 text-xs text-cyan-600 dark:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">Explore Tests →</div>
+          </div>
+          <div onclick="openCompany('accenture.html')" class="company-card group cursor-pointer bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-3xl p-6 text-center hover:bg-white dark:hover:bg-[#1C1C28] hover:border-purple-300 dark:hover:border-purple-700/80 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top rounded-l-full"></div>
+            <div class="text-4xl mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">🚀</div>
+            <h3 class="text-lg font-medium mb-1">Accenture ASE</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">cognitive · technical · communication</p>
+            <div class="mt-3 text-xs text-purple-600 dark:text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">Explore Tests →</div>
+          </div>
+        </div>
+
+        <div class="mt-12 text-center">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Looking for comprehensive practice?</p>
+          <a href="full-mocks.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+            <span>📋</span> Explore Full Length Mock Tests <span class="text-lg">→</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="w-full py-10">
+        <div onclick="window.location.href='syllabus.html'" class="fade-up relative bg-gradient-to-br from-blue-50/80 to-indigo-50/80 dark:from-[#16161F] dark:to-[#13131B] border border-blue-100/70 dark:border-[#2A2A37]/80 rounded-3xl p-6 md:p-8 overflow-hidden group hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-blue-500 to-indigo-500 group-hover:w-2 transition-all duration-300 rounded-l-full"></div>
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl bg-blue-100 dark:bg-blue-900/30 w-12 h-12 rounded-xl flex items-center justify-center border border-blue-200 dark:border-blue-800/30 shrink-0">🗺️</div>
+              <div>
+                <h3 class="text-lg font-medium tracking-tight text-blue-600 dark:text-blue-400">prepare with a roadmap</h3>
+                <p class="text-slate-600 dark:text-[#B0B0C0] max-w-xl text-xs md:text-sm mt-1">Latest test patterns for TCS, Wipro, Infosys, Accenture.</p>
+              </div>
+            </div>
+            <button class="group/btn shrink-0 px-5 py-2 rounded-full bg-white dark:bg-[#1E1E2A] border border-slate-200 dark:border-[#353542] text-sm font-medium hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-[#262633] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm">
+              <span class="flex items-center gap-1">explore patterns <span class="group-hover/btn:translate-x-1 transition text-lg">→</span></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="w-full py-12 mb-8">
+        <h2 class="fade-up text-2xl font-light text-center mb-10 tracking-tight">
+          sharp <span class="font-medium text-blue-600 dark:text-blue-400">pro tips</span>
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="fade-up p-5 bg-white/50 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-[#1C1C28] transition-all group">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl bg-blue-100 dark:bg-blue-900/30 w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">⏱️</span>
+              <div>
+                <h3 class="text-base font-medium">time management</h3>
+                <p class="text-slate-500 dark:text-[#8A8A9E] text-xs mt-1">Practice with a strict timer — speed & accuracy win placements.</p>
+              </div>
+            </div>
+          </div>
+          <div class="fade-up p-5 bg-white/50 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-[#1C1C28] transition-all group">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl bg-indigo-100 dark:bg-indigo-900/30 w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">📅</span>
+              <div>
+                <h3 class="text-base font-medium">daily practice</h3>
+                <p class="text-slate-500 dark:text-[#8A8A9E] text-xs mt-1">15–20 mixed questions daily build intuition & consistency.</p>
+              </div>
+            </div>
+          </div>
+          <div class="fade-up p-5 bg-white/50 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-[#1C1C28] transition-all group">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl bg-emerald-100 dark:bg-emerald-900/30 w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">🧠</span>
+              <div>
+                <h3 class="text-base font-medium">logical thinking</h3>
+                <p class="text-slate-500 dark:text-[#8A8A9E] text-xs mt-1">Understand patterns, not just formulas.</p>
+              </div>
+            </div>
+          </div>
+          <div class="fade-up p-5 bg-white/50 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-[#1C1C28] transition-all group">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl bg-amber-100 dark:bg-amber-900/30 w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">📘</span>
+              <div>
+                <h3 class="text-base font-medium">revise concepts</h3>
+                <p class="text-slate-500 dark:text-[#8A8A9E] text-xs mt-1">Keep a formula sheet — review before every mock.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="fade-up w-full border-t border-slate-200/60 dark:border-[#2A2A37]/80 py-6 text-center text-slate-400 dark:text-[#6B6B80] text-xs">
+      <p>© 2026 aptitude portal · minimal practice for maximum results</p>
+    </footer>
+
+    <script>
+      // Initialize sample data on page load
+      if (typeof initFirestore === 'function') {
+        initFirestore();
+      }
+
+      function scrollToCompanies() {
+        document.getElementById("companies")?.scrollIntoView({ behavior: "smooth" });
+      }
+      
+      function openCompany(url) {
+        window.location.href = url;
+      }
+      
+      function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+          localStorage.removeItem("username");
+          localStorage.removeItem("userLoginID");
+          window.location.href = "login.html";
+        }
+      }
+
+      (function () {
+        const html = document.documentElement;
+        const themeBtn = document.getElementById("themeBtn");
+        if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          html.classList.add("dark");
+          if (themeBtn) themeBtn.innerText = "☀️";
+        } else {
+          html.classList.remove("dark");
+          if (themeBtn) themeBtn.innerText = "🌙";
+        }
+      })();
+
+      window.toggleDarkMode = function () {
+        const html = document.documentElement;
+        const themeBtn = document.getElementById("themeBtn");
+        if (html.classList.contains("dark")) {
+          html.classList.remove("dark");
+          localStorage.theme = "light";
+          if (themeBtn) themeBtn.innerText = "🌙";
+        } else {
+          html.classList.add("dark");
+          localStorage.theme = "dark";
+          if (themeBtn) themeBtn.innerText = "☀️";
+        }
+      };
+
+      window.onload = function () {
+        const username = localStorage.getItem("username");
+        const display = document.getElementById("usernameDisplay");
+        const welcomeName = document.getElementById("welcomeName");
+        
+        if (display && username) display.innerText = username;
+        if (welcomeName && username) welcomeName.innerText = username.split(' ')[0];
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: "0px 0px -30px 0px" },
+        );
+        document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
+      });
+    </script>
+  </body>
+</html>

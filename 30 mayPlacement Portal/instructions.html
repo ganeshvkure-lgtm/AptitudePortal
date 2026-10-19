@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>instructions · aptitude portal</title>
+
+  <!-- 1. Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // 2. Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyqS7iZujmdJ-Vwg5yrRfS24yW-VzG540",
+      authDomain: "placement-portal-465c2.firebaseapp.com",
+      projectId: "placement-portal-465c2",
+      storageBucket: "placement-portal-465c2.firebasestorage.app",
+      messagingSenderId: "60536248254",
+      appId: "1:60536248254:web:2b4fe5996029c4712e0bef",
+      measurementId: "G-F1T6X08PZ7"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    if (!localStorage.getItem("username")) {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { 
+        extend: { 
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            deep: { 950: '#0B0B12', 900: '#13131C', 800: '#1E1E2A' }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            glow: {
+              '0%, 100%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.3)' },
+              '50%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.6)' },
+            },
+          },
+        } 
+      }
+    }
+  </script>
+  
+  <style>
+    .fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .bg-grid-pattern { background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px); background-size: 32px 32px; }
+    .dark body { background-color: #0B0B12; }
+    .dark .bg-white { background-color: #16161F !important; }
+    .dark .border-slate-200 { border-color: #2A2A37 !important; }
+    .dark .text-slate-500 { color: #8A8A9E !important; }
+    .instruction-item { transition: all 0.2s ease; }
+    .instruction-item:hover { transform: translateX(6px); }
+    body { overflow-y: auto; min-height: 100vh; display: flex; flex-direction: column; }
+    .main-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+    
+    /* Custom checkbox styling */
+    .checkbox-custom {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dark .checkbox-custom {
+      border-color: #334155;
+      background: #1e293b;
+    }
+    .checkbox-custom:checked {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      position: relative;
+    }
+    .checkbox-custom:checked::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .checkbox-custom:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 10px;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
+</head>
+
+<body class="bg-soft-50 dark:bg-[#0B0B12] text-slate-900 dark:text-slate-200 font-sans antialiased relative overflow-x-hidden">
+  <div class="fixed inset-0 z-[-1] bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:linear-gradient(to_bottom,black,transparent)] pointer-events-none"></div>
+  <div id="orb1" class="fixed top-20 -left-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-[120px] z-[-1] animate-float"></div>
+  <div id="orb2" class="fixed bottom-20 -right-20 w-96 h-96 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-[140px] z-[-1]" style="animation-delay: -3s;"></div>
+
+  <div class="main-container">
+    <div class="fade-up w-full max-w-3xl bg-white/60 dark:bg-[#16161F]/70 backdrop-blur-sm border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-3xl shadow-xl relative overflow-hidden z-10">
+      
+      <div id="companyStrip" class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></div>
+
+      <div class="p-8 sm:p-10">
+        <!-- Header -->
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex items-center gap-4">
+            <div id="companyIcon" class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg">
+              🏢
+            </div>
+            <div>
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span id="companyBadge" class="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">Loading Cloud Data...</span>
+                <span class="text-xs text-slate-400">•</span>
+                <span id="testId" class="text-xs text-slate-400 font-mono"></span>
+              </div>
+              <h1 id="testTitle" class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-800 dark:text-white">Fetching Test Details...</h1>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs uppercase tracking-[0.3em] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-800/30">instructions</span>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div class="bg-white dark:bg-[#1E1E2A] border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl p-4 text-center hover:shadow-md transition-all duration-300 group">
+            <div class="text-2xl mb-1 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">📋</div>
+            <span class="text-xs text-slate-500 uppercase tracking-wider">Questions</span>
+            <p id="totalQs" class="text-2xl font-bold mt-1">0</p>
+          </div>
+          <div class="bg-white dark:bg-[#1E1E2A] border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl p-4 text-center hover:shadow-md transition-all duration-300 group">
+            <div class="text-2xl mb-1 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">⏱️</div>
+            <span class="text-xs text-slate-500 uppercase tracking-wider">Duration</span>
+            <p id="totalTime" class="text-2xl font-bold mt-1">0 min</p>
+          </div>
+          <div class="bg-white dark:bg-[#1E1E2A] border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl p-4 text-center hover:shadow-md transition-all duration-300 group">
+            <div class="text-2xl mb-1 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">📌</div>
+            <span class="text-xs text-slate-500 uppercase tracking-wider">Section</span>
+            <p id="testSection" class="text-lg font-bold mt-1 truncate px-1">Loading...</p>
+          </div>
+          <div class="bg-white dark:bg-[#1E1E2A] border border-slate-200/60 dark:border-[#2A2A37]/80 rounded-xl p-4 text-center hover:shadow-md transition-all duration-300 group">
+            <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"><span id="difficultyIcon">📊</span></div>
+            <span class="text-xs text-slate-500 uppercase tracking-wider">Difficulty</span>
+            <p id="testLevel" class="text-lg font-bold mt-1">Mixed</p>
+          </div>
+        </div>
+
+        <!-- Distribution Bars -->
+        <div id="difficultyBars" class="mb-6 p-5 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-200/60 dark:border-[#2A2A37]/80 hidden">
+          <h4 class="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
+            <span class="text-lg">📊</span> Question Distribution
+          </h4>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-semibold w-14 text-emerald-600 dark:text-emerald-400">Easy</span>
+              <div class="flex-1 h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div id="easyProgress" class="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-700" style="width: 0%"></div>
+              </div>
+              <span id="easyCount" class="text-xs font-semibold w-8 text-right text-emerald-600 dark:text-emerald-400">0</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-semibold w-14 text-amber-600 dark:text-amber-400">Medium</span>
+              <div class="flex-1 h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div id="mediumProgress" class="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-700" style="width: 0%"></div>
+              </div>
+              <span id="mediumCount" class="text-xs font-semibold w-8 text-right text-amber-600 dark:text-amber-400">0</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-semibold w-14 text-rose-600 dark:text-rose-400">Hard</span>
+              <div class="flex-1 h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div id="hardProgress" class="h-full bg-gradient-to-r from-rose-400 to-rose-500 rounded-full transition-all duration-700" style="width: 0%"></div>
+              </div>
+              <span id="hardCount" class="text-xs font-semibold w-8 text-right text-rose-600 dark:text-rose-400">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guidelines -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-200">
+            <span class="w-7 h-7 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">📋</span> 
+            Important Guidelines
+          </h3>
+          <div class="space-y-3">
+            <div class="instruction-item flex items-start gap-3 p-3 bg-white dark:bg-[#1E1E2A] rounded-xl border border-slate-200/60 dark:border-[#2A2A37]/80 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200">
+              <span class="text-emerald-600 text-lg bg-emerald-50 dark:bg-emerald-900/30 w-8 h-8 rounded-lg flex items-center justify-center shrink-0">⏱️</span>
+              <p class="text-sm text-slate-600 dark:text-slate-300">Timer counts down automatically. Test submits when time reaches zero.</p>
+            </div>
+            <div class="instruction-item flex items-start gap-3 p-3 bg-white dark:bg-[#1E1E2A] rounded-xl border border-slate-200/60 dark:border-[#2A2A37]/80 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200">
+              <span class="text-blue-600 text-lg bg-blue-50 dark:bg-blue-900/30 w-8 h-8 rounded-lg flex items-center justify-center shrink-0">💾</span>
+              <p class="text-sm text-slate-600 dark:text-slate-300">Click <span class="font-semibold text-blue-600 dark:text-blue-400">Save &amp; Next</span> to save answer and move forward.</p>
+            </div>
+            <div class="instruction-item flex items-start gap-3 p-3 bg-white dark:bg-[#1E1E2A] rounded-xl border border-slate-200/60 dark:border-[#2A2A37]/80 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200">
+              <span class="text-purple-600 text-lg bg-purple-50 dark:bg-purple-900/30 w-8 h-8 rounded-lg flex items-center justify-center shrink-0">🎯</span>
+              <p class="text-sm text-slate-600 dark:text-slate-300">You can navigate between questions using the palette on the right side.</p>
+            </div>
+            <div class="instruction-item flex items-start gap-3 p-3 bg-white dark:bg-[#1E1E2A] rounded-xl border border-slate-200/60 dark:border-[#2A2A37]/80 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200">
+              <span class="text-amber-600 text-lg bg-amber-50 dark:bg-amber-900/30 w-8 h-8 rounded-lg flex items-center justify-center shrink-0">⚠️</span>
+              <p class="text-sm text-slate-600 dark:text-slate-300">Do not refresh the page during the test. Your progress will be lost.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agreement Checkbox -->
+        <div class="mb-6 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="agreeCheckbox" class="checkbox-custom mt-0.5" onchange="toggleStartButton()">
+            <div class="text-sm">
+              <span class="font-medium text-amber-800 dark:text-amber-300">I acknowledge that</span>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">I will not switch tabs or refresh the page during the test. Any violation may result in automatic submission.</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 pt-6 border-t border-slate-200/60 dark:border-[#2A2A37]/80">
+          <button onclick="goBack()" class="w-full sm:w-auto px-6 py-3.5 rounded-xl border-2 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95 text-sm flex items-center justify-center gap-2 group">
+            <span class="group-hover:-translate-x-1 transition">←</span> Cancel
+          </button>
+          <button onclick="startQuiz()" id="startBtn" disabled class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg transition-all active:scale-95 text-sm flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+            <span>🚀</span> Begin Assessment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let globalTestType = "sectional"; // Track if this is a fullmock
+    let questionsLoaded = false;
+
+    function toggleStartButton() {
+      const checkbox = document.getElementById('agreeCheckbox');
+      const startBtn = document.getElementById('startBtn');
+      
+      if (checkbox.checked && questionsLoaded) {
+        startBtn.disabled = false;
+        startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        startBtn.classList.add('hover:from-blue-700', 'hover:to-indigo-700', 'animate-glow');
+      } else {
+        startBtn.disabled = true;
+        startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        startBtn.classList.remove('hover:from-blue-700', 'hover:to-indigo-700', 'animate-glow');
+      }
+    }
+
+    window.onload = async () => {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+
+      const testId = localStorage.getItem("currentTestId");
+      if (!testId) { window.location.href = "test-select.html"; return; }
+
+      try {
+        // 1. Fetch Test Details from Cloud
+        const testDoc = await db.collection("tests").doc(testId).get();
+        if (!testDoc.exists) { 
+          document.getElementById('testTitle').innerText = "Test not found in cloud!"; 
+          return;
+        }
+        const testData = testDoc.data();
+        globalTestType = testData.type;
+
+        // 2. Fetch Question Count & Distribution from Cloud
+        const qsSnap = await db.collection("questions").where("testId", "==", testId).get();
+        const questionCount = qsSnap.size;
+        const questions = qsSnap.docs.map(doc => doc.data());
+
+        // Update basic UI
+        document.getElementById('testTitle').innerText = testData.title || "Practice Assessment";
+        document.getElementById('totalQs').innerText = questionCount;
+        document.getElementById('totalTime').innerText = `${testData.time || 30} min`;
+        document.getElementById('testSection').innerText = testData.section || "Full Pattern";
+        document.getElementById('testId').innerText = testId.substring(0, 8) + "...";
+
+        // Update styling based on company
+        updateCompanyUI(testData.company);
+
+        // Update distribution if questions exist
+        if (questionCount > 0) {
+          const easy = questions.filter(q => q.level === 'Easy').length;
+          const medium = questions.filter(q => q.level === 'Medium').length;
+          const hard = questions.filter(q => q.level === 'Hard').length;
+          
+          document.getElementById('difficultyBars').classList.remove('hidden');
+          document.getElementById('easyCount').innerText = easy;
+          document.getElementById('mediumCount').innerText = medium;
+          document.getElementById('hardCount').innerText = hard;
+          document.getElementById('easyProgress').style.width = `${(easy/questionCount)*100}%`;
+          document.getElementById('mediumProgress').style.width = `${(medium/questionCount)*100}%`;
+          document.getElementById('hardProgress').style.width = `${(hard/questionCount)*100}%`;
+          
+          questionsLoaded = true;
+          toggleStartButton();
+        } else {
+          const startBtn = document.getElementById('startBtn');
+          startBtn.innerHTML = "⚠️ No Questions Available";
+          startBtn.disabled = true;
+        }
+
+      } catch (err) {
+        console.error("Cloud Error:", err);
+        document.getElementById('testTitle').innerText = "Error loading data";
+        document.getElementById('testTitle').classList.add('text-red-500');
+      }
+
+      setTimeout(() => document.querySelector('.fade-up').classList.add('visible'), 50);
+    };
+
+    function updateCompanyUI(company) {
+        const strip = document.getElementById('companyStrip');
+        const badge = document.getElementById('companyBadge');
+        const icon = document.getElementById('companyIcon');
+        const orb1 = document.getElementById('orb1');
+        const orb2 = document.getElementById('orb2');
+        
+        if (company === 'TCS') {
+            strip.className = "absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-indigo-500";
+            badge.innerText = "TCS NQT Assessment";
+            icon.className = "w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg";
+            orb1.className = "fixed top-20 -left-20 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-[120px] z-[-1] animate-float";
+        } else if (company === 'Wipro') {
+            strip.className = "absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-600 to-purple-600";
+            badge.innerText = "Wipro Elite Preparation";
+            icon.className = "w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg";
+        } else if (company === 'Infosys') {
+            strip.className = "absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-600 to-teal-500";
+            badge.innerText = "Infosys SP/DSE Assessment";
+            icon.className = "w-16 h-16 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg";
+        } else if (company === 'Accenture') {
+            strip.className = "absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 to-pink-600";
+            badge.innerText = "Accenture ASE Assessment";
+            icon.className = "w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg";
+        } else {
+            strip.className = "absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600";
+            icon.className = "w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg";
+        }
+    }
+
+    function startQuiz() {
+      // Redirect based on test type
+      if (globalTestType === 'fullmock') {
+          window.location.href = "fullmock-quiz.html";
+      } else {
+          window.location.href = "quiz.html";
+      }
+    }
+
+    function goBack() { 
+      if (confirm("Are you sure you want to cancel? Your progress will not be saved.")) {
+        window.history.back(); 
+      }
+    }
+  </script>
+</body>
+</html>
